@@ -1,5 +1,6 @@
 import Navbar from '@/components/nav/Navbar'
 import { Metadata } from 'next'
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
 	title: 'Home',
@@ -11,6 +12,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 		<>
 			<Navbar />
 			{children}
+
+			<Toaster />
 		</>
 	)
 }
