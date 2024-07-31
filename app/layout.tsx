@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import { SessionProvider } from 'next-auth/react'
+import MainProvider from '@/providers/MainProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,9 +26,7 @@ export default function RootLayout({
 				className={inter.className + ' bg-primary-foreground'}
 				suppressHydrationWarning
 			>
-				<ReactQueryProvider>
-					<SessionProvider>{children}</SessionProvider>
-				</ReactQueryProvider>
+				<MainProvider>{children}</MainProvider>
 			</body>
 		</html>
 	)
