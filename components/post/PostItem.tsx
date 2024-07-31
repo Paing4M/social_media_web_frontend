@@ -85,7 +85,7 @@ const PostItem = () => {
 			</div>
 
 			<div className='mt-4 grid grid-cols-2 gap-4'>
-				<div className='border-none outline-none flex items-center justify-center rounded-md gap-3 w-full  cursor-pointer py-2 bg-muted '>
+				<div className='border-none outline-none flex items-center justify-center rounded-md gap-3 w-full  cursor-pointer py-2 bg-muted  '>
 					<button className='flex items-center gap-2'>
 						<ThumbsUpIcon className='size-5' />
 						Like

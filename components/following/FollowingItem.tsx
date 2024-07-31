@@ -3,7 +3,7 @@ import UserAvatar from '../avatar/UserAvatar'
 
 const FollowingItem = () => {
 	return (
-		<Link href={'/'} className='flex items-center gap-x-2'>
+		<Link href={'/'} className='flex items-center gap-x-3'>
 			<UserAvatar name='test' />
 
 			<h4 className='text-[16px] tracking-wide'>Title</h4>
