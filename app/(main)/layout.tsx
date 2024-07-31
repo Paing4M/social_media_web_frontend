@@ -14,13 +14,15 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 		<>
 			<Navbar />
 			<div className='max-w-[1366px] mx-auto grid grid-cols-12 gap-3 py-5 px-6'>
-				<div className='col-span-3 '>
+				<div className='hidden md:block col-span-5 lg:col-span-3 '>
 					<Group />
 				</div>
 
-				<div className='col-span-6 h-[200vh]'>{children}</div>
+				<div className='col-span-12 md:col-span-7 lg:col-span-6 h-[200vh]'>
+					{children}
+				</div>
 
-				<div className='col-span-3 '>
+				<div className='hidden lg:block col-span-3 '>
 					<Following />
 				</div>
 			</div>
