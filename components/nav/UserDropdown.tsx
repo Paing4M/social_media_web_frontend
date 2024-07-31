@@ -18,7 +18,15 @@ import { signOut, useSession } from 'next-auth/react'
 import UserAvatar from '../avatar/UserAvatar'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
-import { CheckIcon, MonitorCogIcon, MoonIcon, SunIcon } from 'lucide-react'
+import {
+	CheckIcon,
+	LogOutIcon,
+	MonitorCogIcon,
+	MoonIcon,
+	SettingsIcon,
+	SunIcon,
+	UserIcon,
+} from 'lucide-react'
 
 const UserDropdown = () => {
 	const { useLogoutMutation } = useAuth()
@@ -53,7 +61,7 @@ const UserDropdown = () => {
 					name={data?.user?.name!}
 				/>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className='w-36'>
+			<DropdownMenuContent className='min-w-fit'>
 				<DropdownMenuLabel asChild>
 					<p className='tracking-wide font-normal'>
 						Logged in as{' '}
@@ -64,12 +72,16 @@ const UserDropdown = () => {
 				<DropdownMenuSeparator />
 
 				<DropdownMenuGroup>
-					<DropdownMenuItem>
+					<DropdownMenuItem className='flex items-center gap-2'>
+						<UserIcon className='size-4' />
 						<Link href={'/profile'}>Profile</Link>
 					</DropdownMenuItem>
 
 					<DropdownMenuSub>
-						<DropdownMenuSubTrigger>Theme</DropdownMenuSubTrigger>
+						<DropdownMenuSubTrigger className='flex items-center gap-2'>
+							<SettingsIcon className='size-4' />
+							Theme
+						</DropdownMenuSubTrigger>
 						<DropdownMenuPortal>
 							<DropdownMenuSubContent>
 								<DropdownMenuItem
@@ -81,7 +93,7 @@ const UserDropdown = () => {
 										System
 									</div>
 									{theme === 'system' && (
-										<CheckIcon className='size-5' />
+										<CheckIcon className='size-4' />
 									)}
 								</DropdownMenuItem>
 
@@ -94,7 +106,7 @@ const UserDropdown = () => {
 										Light
 									</div>
 									{theme === 'light' && (
-										<CheckIcon className='size-5' />
+										<CheckIcon className='size-4' />
 									)}
 								</DropdownMenuItem>
 
@@ -107,7 +119,7 @@ const UserDropdown = () => {
 										Dark
 									</div>
 									{theme === 'dark' && (
-										<CheckIcon className='size-5' />
+										<CheckIcon className='size-4' />
 									)}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
@@ -118,7 +130,12 @@ const UserDropdown = () => {
 					<DropdownMenuSeparator />
 
 					<DropdownMenuItem>
-						<form onSubmit={handleSubmit} action=''>
+						<form
+							onSubmit={handleSubmit}
+							className='flex items-center gap-2'
+							action=''
+						>
+							<LogOutIcon className='size-4' />
 							<button type='submit'>Logout</button>
 						</form>
 					</DropdownMenuItem>

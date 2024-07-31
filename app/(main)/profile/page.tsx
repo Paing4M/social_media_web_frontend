@@ -6,7 +6,7 @@ const ProfilePage = async () => {
 
 	return (
 		<div className='px-6'>
-			<div className='py-6 w-full max-w-[800px] mx-auto'>
+			<div className='w-full max-w-[800px] mx-auto'>
 				<ProfileUserInfo user={session?.user!} />
 			</div>
 		</div>

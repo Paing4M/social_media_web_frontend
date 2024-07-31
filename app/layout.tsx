@@ -23,7 +23,7 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={inter.className + ' bg-primary-foreground'}
+				className={inter.className + ' bg-muted h-full'}
 				suppressHydrationWarning
 			>
 				<MainProvider>{children}</MainProvider>

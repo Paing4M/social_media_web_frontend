@@ -1,10 +1,14 @@
-import { getSession } from 'next-auth/react'
+import PostTextEditor from '@/components/post/PostTextEditor'
 import { auth } from '../api/auth/[...nextauth]/auth'
+import PostList from '@/components/post/PostList'
 
 export default async function Home() {
 	const session = await auth()
-	console.log('home', { session })
-	console.log('home', session?.user.token)
 
-	return <h1>hello</h1>
+	return (
+		<>
+			<PostTextEditor user={session?.user!} />
+			<PostList />
+		</>
+	)
 }

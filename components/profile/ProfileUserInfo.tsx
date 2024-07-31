@@ -63,7 +63,7 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 	}
 
 	return (
-		<div className='rounded-md border shadow-md bg-white p-4 '>
+		<div className='rounded-md border shadow-md bg-background p-4 '>
 			<h2 className='text-lg font-semibold '>User Info</h2>
 			<p className='text-sm text-neutral-400'>
 				Change your user information here.
@@ -104,7 +104,9 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 							disabled={isPending}
 							type='submit'
 							className={` py-2 px-4 min-w-[140px] rounded-md text-white ${
-								isPending ? 'bg-neutral-600' : 'bg-primary'
+								isPending
+									? 'bg-neutral-600 dark:bg-muted-foreground'
+									: 'bg-primary dark:bg-accent'
 							}`}
 						>
 							Save
