@@ -65,7 +65,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 			if (user) {
 				token.user = user
 			}
-			console.log({ token })
 
 			return token
 		},

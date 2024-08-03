@@ -9,6 +9,7 @@ import {
 	MessageSquareIcon,
 	ThumbsUpIcon,
 } from 'lucide-react'
+import { Button } from '../ui/button'
 
 const PostItem = () => {
 	const [seeMore, setseeMore] = useState(false)
@@ -84,19 +85,21 @@ const PostItem = () => {
 				</div>
 			</div>
 
-			<div className='mt-4 grid grid-cols-2 gap-4'>
-				<div className='border-none outline-none flex items-center justify-center rounded-md gap-3 w-full  cursor-pointer py-2 bg-muted  '>
-					<button className='flex items-center gap-2'>
-						<ThumbsUpIcon className='size-5' />
-						Like
-					</button>
-				</div>
+			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
+				<Button
+					variant={'secondary'}
+					className='flex items-center gap-2 w-full justify-center'
+				>
+					<ThumbsUpIcon className='size-5' />
+					Like
+				</Button>
 
-				<div className='border-none outline-none flex items-center justify-center rounded-md gap-3 w-full  cursor-pointer py-2 bg-muted '>
-					<button className='flex items-center gap-2'>
-						<MessageSquareIcon className='size-5' /> Comment
-					</button>
-				</div>
+				<Button
+					variant={'secondary'}
+					className='flex items-center gap-2 w-full justify-center py-2 '
+				>
+					<MessageSquareIcon className='size-5' /> Comment
+				</Button>
 			</div>
 		</div>
 	)

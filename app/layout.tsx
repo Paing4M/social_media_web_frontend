@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import ReactQueryProvider from '@/providers/ReactQueryProvider'
-import { SessionProvider } from 'next-auth/react'
 import MainProvider from '@/providers/MainProvider'
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,6 +26,7 @@ export default function RootLayout({
 				suppressHydrationWarning
 			>
 				<MainProvider>{children}</MainProvider>
+				<Toaster />
 			</body>
 		</html>
 	)

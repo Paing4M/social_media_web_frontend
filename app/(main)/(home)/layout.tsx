@@ -18,7 +18,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 					<Group />
 				</div>
 
-				<div className='col-span-12 md:col-span-7 lg:col-span-6 h-[200vh]'>
+				<div className='col-span-12 md:col-span-7 lg:col-span-6 '>
 					{children}
 				</div>
 

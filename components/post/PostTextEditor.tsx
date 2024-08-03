@@ -22,6 +22,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 				placeholder: "What's on your mind ...",
 			}),
 		],
+		immediatelyRender: false,
 	})
 
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
@@ -45,7 +46,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 						<div>
 							<input type='file' hidden id='file' />
 							<label
-								className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-4 py-2 min-w-20 bg-[#009FBD] hover:bg-[#07bde1] dark:bg-[#83B4FF]'
+								className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-4 py-2 min-w-20 bg-primary hover:bg-primary/90'
 								htmlFor='file'
 							>
 								Files
@@ -53,7 +54,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 						</div>
 
 						<Button
-							className='min-w-20 bg-[#009FBD] hover:bg-[#07bde1] dark:bg-[#83B4FF]'
+							className='min-w-20 bg-primary hover:bg-primary/90'
 							onClick={onSubmit}
 						>
 							Post

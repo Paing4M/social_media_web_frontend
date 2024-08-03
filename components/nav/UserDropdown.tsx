@@ -37,8 +37,6 @@ const UserDropdown = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 
-		console.log('logout')
-
 		try {
 			await mutateAsync(undefined, {
 				onSuccess: (res) => {
@@ -74,7 +72,7 @@ const UserDropdown = () => {
 				<DropdownMenuGroup>
 					<DropdownMenuItem className='flex items-center gap-2'>
 						<UserIcon className='size-4' />
-						<Link href={'/profile'}>Profile</Link>
+						<Link href={'/profile/' + data?.user?.id}>Profile</Link>
 					</DropdownMenuItem>
 
 					<DropdownMenuSub>

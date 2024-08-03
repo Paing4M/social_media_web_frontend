@@ -8,6 +8,7 @@ import { useProfile } from '@/hooks/useProfile'
 import InputError from '@/app/(auth)/InputError'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import { Button } from '../ui/button'
 
 interface ProfileUserInfoProps {
 	user: UserInterface
@@ -43,11 +44,11 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 		try {
 			await mutateAsync(data, {
 				onSuccess: (res) => {
-					console.log(res)
+					// console.log(res)
 					if (res?.status === 200) {
+						toast.success(res?.message)
 						update({ name: res.user.name, username: res.user.username })
 						setErrors(null)
-						toast.success(res?.message)
 					}
 				},
 				onError: (err: any) => {
@@ -100,17 +101,15 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 					</div> */}
 
 					<div>
-						<button
+						<Button
 							disabled={isPending}
 							type='submit'
-							className={` py-2 px-4 min-w-[140px] rounded-md text-white ${
-								isPending
-									? 'bg-neutral-600 dark:bg-muted-foreground'
-									: 'bg-primary dark:bg-accent'
+							className={` min-w-[140px] ${
+								isPending ? 'bg-primary' : 'bg-primary dark:bg-accent'
 							}`}
 						>
 							Save
-						</button>
+						</Button>
 					</div>
 				</form>
 			</div>

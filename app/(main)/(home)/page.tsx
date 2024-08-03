@@ -1,5 +1,5 @@
 import PostTextEditor from '@/components/post/PostTextEditor'
-import { auth } from '../api/auth/[...nextauth]/auth'
+import { auth } from '../../api/auth/[...nextauth]/auth'
 import PostList from '@/components/post/PostList'
 
 interface SearchParamsInterace {
