@@ -9,6 +9,7 @@ import InputError from '@/app/(auth)/InputError'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import { Button } from '../ui/button'
+import { useRouter } from 'next/navigation'
 
 interface ProfileUserInfoProps {
 	user: UserInterface
@@ -23,10 +24,10 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 	})
 	const [errors, setErrors] = useState<Error | null>(null)
 
-	const { useProfileMutation } = useProfile()
-	const { mutateAsync, isPending } = useProfileMutation()
-
+	const { useProfileInfoMutation } = useProfile()
+	const { mutateAsync, isPending } = useProfileInfoMutation()
 	const { update } = useSession()
+	const router = useRouter()
 
 	const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -49,10 +50,11 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 						toast.success(res?.message)
 						update({ name: res.user.name, username: res.user.username })
 						setErrors(null)
+						// router.push(`/profile/${res.user.username}`)
 					}
 				},
 				onError: (err: any) => {
-					console.log(err)
+					// console.log(err)
 					if (err?.response.status === 422) {
 						setErrors(err?.response?.data?.errors)
 					}
@@ -104,8 +106,10 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 						<Button
 							disabled={isPending}
 							type='submit'
-							className={` min-w-[140px] ${
-								isPending ? 'bg-primary' : 'bg-primary dark:bg-accent'
+							className={`min-w-[140px] ${
+								isPending
+									? 'bg-primary'
+									: 'bg-primary dark:bg-accent text-white'
 							}`}
 						>
 							Save

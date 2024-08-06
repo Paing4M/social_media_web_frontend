@@ -5,7 +5,21 @@ export interface ChangeProfile {
 	username?: string | null
 }
 
-export const changeProfile = async (data: ChangeProfile) => {
-	const res = await Axios.patch('/user/profile', data)
+export interface ChangeProfileImage {
+	cover?: File | null
+	avatar?: File | null
+}
+
+export const changeProfileInfo = async (data: ChangeProfile) => {
+	const res = await Axios.patch('/user/change-profile-info', data)
+	return res.data
+}
+
+export const changeProfileImage = async (data: ChangeProfileImage) => {
+	const res = await Axios.post('/user/change-profile-image', data, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	})
 	return res.data
 }

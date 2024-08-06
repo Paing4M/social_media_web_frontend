@@ -1,6 +1,5 @@
-import Axios from '@/lib/axios'
 import axios from 'axios'
-import NextAuth, { Session } from 'next-auth'
+import NextAuth from 'next-auth'
 import { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
@@ -54,6 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 		async jwt({ user, token, trigger, session }) {
 			// update session
 			if (trigger === 'update' && session) {
+				console.log(session)
 				const user = {
 					...(token.user as object),
 					...session,

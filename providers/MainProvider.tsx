@@ -1,5 +1,6 @@
 'use client'
 
+import { Toaster } from 'react-hot-toast'
 import AuthProvider from './AuthProvider'
 import ReactQueryProvider from './ReactQueryProvider'
 import { ThemeProvider } from './ThemeProvider'
@@ -17,6 +18,7 @@ const MainProvider = ({ children }: { children: React.ReactNode }) => {
 					{children}
 				</ThemeProvider>
 			</ReactQueryProvider>
+			<Toaster />
 		</AuthProvider>
 	)
 }

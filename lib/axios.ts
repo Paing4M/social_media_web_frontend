@@ -23,13 +23,20 @@ Axios.interceptors.request.use(
 		const session = await getSession()
 		const token = session?.user?.token!
 
-		// console.log('token', token)
-
-		config.headers = {
+		let headers = {
 			Authorization: `Bearer ${token}`,
 			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			// 'Content-Type': 'application/json',
 		} as AxiosRequestHeaders
+
+		if (config.url?.includes('change-profile-image')) {
+			headers = {
+				...headers,
+				'Content-Type': 'multipart/form-data',
+			} as AxiosRequestHeaders
+		}
+
+		config.headers = headers
 
 		return config
 	},

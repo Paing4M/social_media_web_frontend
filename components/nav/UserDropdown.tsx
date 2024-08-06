@@ -55,7 +55,7 @@ const UserDropdown = () => {
 		<DropdownMenu>
 			<DropdownMenuTrigger className='outline-none border-none'>
 				<UserAvatar
-					src={data?.user?.avatar_path!}
+					src={data?.user?.avatar_url!}
 					name={data?.user?.name!}
 				/>
 			</DropdownMenuTrigger>
@@ -70,9 +70,14 @@ const UserDropdown = () => {
 				<DropdownMenuSeparator />
 
 				<DropdownMenuGroup>
-					<DropdownMenuItem className='flex items-center gap-2'>
-						<UserIcon className='size-4' />
-						<Link href={'/profile/' + data?.user?.id}>Profile</Link>
+					<DropdownMenuItem asChild>
+						<Link
+							className='flex cursor-pointer items-center gap-2'
+							href={'/profile/' + data?.user?.username}
+						>
+							<UserIcon className='size-4' />
+							Profile
+						</Link>
 					</DropdownMenuItem>
 
 					<DropdownMenuSub>
