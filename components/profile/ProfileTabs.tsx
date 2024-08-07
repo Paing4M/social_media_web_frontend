@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs'
 import { Button } from '../ui/button'
-import { CameraIcon, PencilIcon, XIcon } from 'lucide-react'
+import { CameraIcon, PencilIcon, UserRoundPlusIcon, XIcon } from 'lucide-react'
 import { Session } from 'next-auth'
 import ProfileUserInfo from './ProfileUserInfo'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
@@ -51,8 +51,7 @@ const ProfileTabs = ({
 										avatarUrl ||
 										(data?.user.username === user.username
 											? data?.user?.avatar_url!
-											: user.avatar_url!) ||
-										'/assets/default-cover.jpg'
+											: user.avatar_url!)
 									}
 									alt='img'
 								/>
@@ -63,46 +62,68 @@ const ProfileTabs = ({
 								</AvatarFallback>
 							</Avatar>
 
-							{!avatarUrl ? (
-								<label
-									htmlFor='avatar'
-									className='bg-background p-1 px-2 rounded-md absolute cursor-pointer flex items-center gap-2 text-sm top-1 -right-[40%]'
-								>
-									<CameraIcon className='size-4' />
-									Avatar
-									<input
-										onChange={(e) =>
-											handleUpload(e, setAvatarUrl!, setAvatarFile!)
-										}
-										type='file'
-										hidden
-										id='avatar'
-									/>
-								</label>
-							) : (
-								<button
-									onClick={clearAvatar}
-									className='bg-background p-2 absolute border cursor-pointer rounded-full top-1 -right-[10%]'
-								>
-									<XIcon className='size-4 text-red-500' />
-								</button>
+							{user?.username === data?.user?.username && (
+								<>
+									{!avatarUrl ? (
+										<label
+											htmlFor='avatar'
+											className='bg-background p-1 px-2 rounded-md absolute cursor-pointer flex items-center gap-2 text-sm top-1 -right-[40%] hover:bg-background/80'
+										>
+											<CameraIcon className='size-4' />
+											Avatar
+											<input
+												onChange={(e) =>
+													handleUpload(
+														e,
+														setAvatarUrl!,
+														setAvatarFile!
+													)
+												}
+												type='file'
+												hidden
+												id='avatar'
+											/>
+										</label>
+									) : (
+										<button
+											onClick={clearAvatar}
+											className='bg-background p-2 absolute border cursor-pointer rounded-full top-1 -right-[10%]'
+										>
+											<XIcon className='size-4 text-red-500' />
+										</button>
+									)}
+								</>
 							)}
 						</div>
 
-						<div className='flex items-center p-3 justify-between'>
+						<div className='flex items-center p-3 justify-between gap-1'>
 							<h2 className='text-xl font-bold ml-28'>Hello</h2>
 
-							<Button
-								onClick={onSubmit}
-								className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
-							>
-								{loading ? (
-									<Loading />
-								) : (
-									<PencilIcon className='size-4' />
-								)}
-								{loading ? 'Processing' : 'Save'}
-							</Button>
+							{user?.username === data?.user?.username ? (
+								<Button
+									onClick={onSubmit}
+									className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+								>
+									{loading ? (
+										<Loading />
+									) : (
+										<PencilIcon className='size-4' />
+									)}
+									{loading ? 'Processing' : 'Save'}
+								</Button>
+							) : (
+								<Button
+									onClick={onSubmit}
+									className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+								>
+									{loading ? (
+										<Loading />
+									) : (
+										<UserRoundPlusIcon className='size-4' />
+									)}
+									{loading ? 'Processing' : 'Follow'}
+								</Button>
+							)}
 						</div>
 					</div>
 

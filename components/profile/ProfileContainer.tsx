@@ -45,7 +45,6 @@ const ProfileContainer = ({ username, user }: ProfileContainerProps) => {
 	const [errors, setErrors] = useState<Error | null>(null)
 
 	if (!data) return
-	console.log(data)
 
 	const handleUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -64,8 +63,6 @@ const ProfileContainer = ({ username, user }: ProfileContainerProps) => {
 			reader.readAsDataURL(file)
 		}
 	}
-
-	console.log(data)
 
 	async function handleSubmit() {
 		try {
@@ -125,34 +122,38 @@ const ProfileContainer = ({ username, user }: ProfileContainerProps) => {
 					/>
 				</div>
 
-				{!coverUrl && (
-					<label
-						htmlFor='cover_img'
-						className='flex items-center gap-2 outline-none border-none uppercase text-xs tracking-wide absolute top-4 right-4 px-3 cursor-pointer py-2 bg-muted rounded-md hover:bg-muted/80 shadow-sm'
-					>
-						<ImageIcon className='size-4' />
-						Update Cover Image
-						<input
-							onChange={(e) =>
-								handleUpload(e, setCoverUrl, setCoverFile)
-							}
-							type='file'
-							id='cover_img'
-							hidden
-						/>
-					</label>
-				)}
+				{user?.username === data?.user?.username && (
+					<>
+						{!coverUrl && (
+							<label
+								htmlFor='cover_img'
+								className='flex items-center gap-2 outline-none border-none uppercase text-xs tracking-wide absolute top-4 right-4 px-3 cursor-pointer py-2 bg-muted rounded-md hover:bg-muted/80 shadow-sm'
+							>
+								<ImageIcon className='size-4' />
+								Choose Cover Image
+								<input
+									onChange={(e) =>
+										handleUpload(e, setCoverUrl, setCoverFile)
+									}
+									type='file'
+									id='cover_img'
+									hidden
+								/>
+							</label>
+						)}
 
-				{coverUrl && (
-					<div className='absolute top-4 right-4'>
-						<Btn
-							onClick={clearCover}
-							className='!bg-destructive !hover:bg-destructive/80 text-white'
-						>
-							<XIcon className='size-4' />
-							Cancle
-						</Btn>
-					</div>
+						{coverUrl && (
+							<div className='absolute top-4 right-4'>
+								<Btn
+									onClick={clearCover}
+									className='!bg-destructive !hover:bg-destructive/80 text-white'
+								>
+									<XIcon className='size-4' />
+									Cancle
+								</Btn>
+							</div>
+						)}
+					</>
 				)}
 			</div>
 

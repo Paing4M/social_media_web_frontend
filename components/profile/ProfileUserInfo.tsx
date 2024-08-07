@@ -48,9 +48,9 @@ const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 					// console.log(res)
 					if (res?.status === 200) {
 						toast.success(res?.message)
-						update({ name: res.user.name, username: res.user.username })
+						update(res?.user)
 						setErrors(null)
-						// router.push(`/profile/${res.user.username}`)
+						router.push(`/profile/${res.user.username}`)
 					}
 				},
 				onError: (err: any) => {
