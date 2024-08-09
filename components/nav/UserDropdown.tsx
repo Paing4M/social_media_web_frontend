@@ -63,7 +63,7 @@ const UserDropdown = () => {
 				<DropdownMenuLabel asChild>
 					<p className='tracking-wide font-normal'>
 						Logged in as{' '}
-						<span className='font-semibold'>{data?.user?.name}</span>
+						<span className='font-semibold'>{data?.user?.username}</span>
 					</p>
 				</DropdownMenuLabel>
 

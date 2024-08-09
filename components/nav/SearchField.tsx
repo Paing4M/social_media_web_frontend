@@ -10,8 +10,11 @@ const SearchField = () => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		if (searchInput?.trim())
+		if (searchInput?.trim()) {
 			router.push('/?search=' + encodeURIComponent(searchInput!))
+		} else {
+			router.push('/')
+		}
 	}
 
 	return (

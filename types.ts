@@ -12,3 +12,42 @@ interface UserInterface {
 	created_at?: string
 	updated_at?: string
 }
+
+type ApiResponse<T> = {
+	data: T
+	links?: Links
+	meta?: Meta
+}
+
+type Post = {
+	id: number
+	body: string
+	group: any | null
+	user: UserInterface
+	created_at?: string
+}
+
+type Links = {
+	first: string | null
+	last: string | null
+	prev: string | null
+	next: string | null
+}
+
+type Meta = {
+	path: string | null
+	per_page: number
+	next_cursor: string | null
+	prev_cursor: string | null
+}
+
+interface PostAttachmentInterface {
+	post_id: number
+	name: string
+	path?: string
+	url?: string
+	mime?: string
+	created_by?: string
+	created_at?: string
+	updated_at?: string
+}

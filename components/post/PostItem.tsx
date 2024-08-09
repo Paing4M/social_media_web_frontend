@@ -5,47 +5,79 @@ import UserAvatar from '../avatar/UserAvatar'
 import Image from 'next/image'
 import {
 	DownloadIcon,
+	EllipsisVerticalIcon,
 	FileIcon,
 	MessageSquareIcon,
+	PencilIcon,
 	ThumbsUpIcon,
+	TrashIcon,
 } from 'lucide-react'
 import { Button } from '../ui/button'
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuItem,
+} from '../ui/dropdown-menu'
 
-const PostItem = () => {
+interface PostItemProps {
+	post: Post
+	handleEdit: (post: Post) => void
+}
+
+const PostItem = ({ post, handleEdit }: PostItemProps) => {
 	const [seeMore, setseeMore] = useState(false)
-
-	let t = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam eius
-				voluptas incidunt illum! Commodi, necessitatibus facilis, deserunt
-				consectetur culpa sed autem expedita, beatae quis placeat fuga
-				asperiores nulla esse nostrum?`
-
-	let att = [
-		'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2FsbHBhcGVyfGVufDB8fDB8fHww',
-		'https://images.unsplash.com/photo-1487088678257-3a541e6e3922?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d2FsbHBhcGVyfGVufDB8fDB8fHww',
-		'https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8d2FsbHBhcGVyfGVufDB8fDB8fHww',
-		'https://images.unsplash.com/photo-1487088678257-3a541e6e3922?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d2FsbHBhcGVyfGVufDB8fDB8fHww',
-	]
 
 	return (
 		<div className='p-4 rounded-lg bg-background shadow-sm border'>
-			<div className='flex items-start gap-3'>
-				<UserAvatar name='banana' />
-				<div>
-					<h3 className='text-[16px] font-semibold tracking-wide '>
-						Banana
-					</h3>
-					<p className='text-muted-foreground text-[13px] leading-4'>
-						2024, 03, 01
-					</p>
+			<div className='flex items-center justify-between'>
+				<div className='flex items-start gap-3'>
+					<UserAvatar name='banana' />
+					<div>
+						<h3 className='text-[16px] font-semibold tracking-wide '>
+							Banana
+						</h3>
+						<p className='text-muted-foreground text-[13px] leading-4'>
+							2024, 03, 01
+						</p>
+					</div>
 				</div>
+
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<button className='border-none outline-none'>
+							<EllipsisVerticalIcon className='size-5' />
+						</button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem asChild>
+							<button
+								onClick={() => handleEdit(post)}
+								className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
+							>
+								<PencilIcon className='size-4' />
+								Edit
+							</button>
+						</DropdownMenuItem>
+
+						<DropdownMenuItem asChild>
+							<button className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'>
+								<TrashIcon className='size-4' />
+								Delete
+							</button>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 
 			<p
 				onClick={() => setseeMore((prev) => !prev)}
 				className='mt-2 select-none '
 			>
-				{t.length > 100 && !seeMore ? t.slice(0, 100) : t}{' '}
-				{t.length > 0 && !seeMore && (
+				{post?.body?.length > 100 && !seeMore
+					? post?.body?.slice(0, 100)
+					: post?.body}{' '}
+				{post?.body?.length > 100 && !seeMore && (
 					<span
 						onClick={(e) => {
 							e.stopPropagation()
@@ -60,7 +92,7 @@ const PostItem = () => {
 
 			<div className='mt-4 grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
 				{/* image */}
-				{att.map((a, idx) => (
+				{/* {att.map((a, idx) => (
 					<div key={idx} className='relative'>
 						<Image
 							className='w-full rounded-md h-full object-cover'
@@ -73,7 +105,7 @@ const PostItem = () => {
 							<DownloadIcon className='size-5 ' />
 						</button>
 					</div>
-				))}
+				))} */}
 
 				{/* cannot preview file */}
 				<div className='relative rounded-md flex items-center justify-center flex-col w-full h-full bg-[#F8EDFF]'>
@@ -88,7 +120,7 @@ const PostItem = () => {
 			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
 				<Button
 					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center'
+					className='flex items-center gap-2 w-full justify-center bg-secondary hover:bg-muted-foreground/80 hover:text-white transition'
 				>
 					<ThumbsUpIcon className='size-5' />
 					Like
@@ -96,7 +128,7 @@ const PostItem = () => {
 
 				<Button
 					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center py-2 '
+					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary hover:bg-muted-foreground/80 hover:text-white transition'
 				>
 					<MessageSquareIcon className='size-5' /> Comment
 				</Button>

@@ -3,7 +3,7 @@ import GroupItem from './GroupItem'
 
 const Group = () => {
 	return (
-		<div className='bg-background sticky top-[calc(70px+1.25rem)] p-4 rounded-lg shadow-sm border flex flex-col overflow-hidden h-fit max-h-[400px] gap-y-2 '>
+		<div className='bg-background sticky top-[calc(70px+1.3rem)] p-4 rounded-lg shadow-sm border flex flex-col overflow-hidden h-fit max-h-[400px] gap-y-2 '>
 			<h2 className='text-xl font-semibold'>My Groups</h2>
 
 			<div>
