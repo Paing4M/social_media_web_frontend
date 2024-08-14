@@ -5,8 +5,7 @@ import PostItem from './PostItem'
 import InfiniteScrollContainer from '../InfiniteScrollContainer'
 import Loading from '../Loading'
 import PostEditModal from '../modal/PostEditModal'
-import { Dialog } from '../ui/dialog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const PostList = () => {
 	const [open, setOpen] = useState(false)
@@ -22,6 +21,12 @@ const PostList = () => {
 		setOpen(true)
 		setEditPost(post)
 	}
+
+	function closeModal() {
+		setOpen(false)
+		setEditPost(null)
+	}
+
 
 	return (
 		<>
@@ -42,7 +47,7 @@ const PostList = () => {
 				key={editPost?.id!}
 				post={editPost}
 				open={open}
-				setIsOpen={setOpen}
+				closeModal={closeModal}
 			/>
 		</>
 	)

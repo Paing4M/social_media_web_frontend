@@ -24,6 +24,7 @@ type Post = {
 	body: string
 	group: any | null
 	user: UserInterface
+	attachments?: PostAttachmentInterface[] | null
 	created_at?: string
 }
 
@@ -42,6 +43,7 @@ type Meta = {
 }
 
 interface PostAttachmentInterface {
+	id?: number
 	post_id: number
 	name: string
 	path?: string

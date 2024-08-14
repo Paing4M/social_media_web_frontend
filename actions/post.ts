@@ -7,6 +7,7 @@ interface AddPostInterface {
 interface UpdatePostInterface {
 	id: number
 	body: string
+	_method?: string
 }
 
 interface GetPostsInterface {
@@ -24,6 +25,10 @@ export const getPosts = async (cursor: string | null = null) => {
 }
 
 export const updatePost = async (data: UpdatePostInterface) => {
-	const res = await Axios.put('/post/' + data.id, data)
+	const updateData = {
+		...data,
+		_method: 'PUT',
+	}
+	const res = await Axios.post('/post/' + data.id, updateData)
 	return res.data
 }

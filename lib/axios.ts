@@ -29,7 +29,10 @@ Axios.interceptors.request.use(
 			// 'Content-Type': 'application/json',
 		} as AxiosRequestHeaders
 
-		if (config.url?.includes('change-profile-image')) {
+		if (
+			config.url?.includes('change-profile-image') ||
+			config.url?.includes('post')
+		) {
 			headers = {
 				...headers,
 				'Content-Type': 'multipart/form-data',

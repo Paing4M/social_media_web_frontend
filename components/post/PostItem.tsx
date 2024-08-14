@@ -19,6 +19,9 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 } from '../ui/dropdown-menu'
+import { formatDate, isImage } from '@/lib/utils'
+import { useSession } from 'next-auth/react'
+import PostAttachments from './PostAttachments'
 
 interface PostItemProps {
 	post: Post
@@ -27,47 +30,53 @@ interface PostItemProps {
 
 const PostItem = ({ post, handleEdit }: PostItemProps) => {
 	const [seeMore, setseeMore] = useState(false)
+	const session = useSession()
 
 	return (
 		<div className='p-4 rounded-lg bg-background shadow-sm border'>
 			<div className='flex items-center justify-between'>
 				<div className='flex items-start gap-3'>
-					<UserAvatar name='banana' />
+					<UserAvatar
+						name={post?.user?.name!}
+						src={post?.user?.avatar_url!}
+					/>
 					<div>
 						<h3 className='text-[16px] font-semibold tracking-wide '>
-							Banana
+							{post?.user?.name}
 						</h3>
-						<p className='text-muted-foreground text-[13px] leading-4'>
-							2024, 03, 01
+						<p className='text-muted-foreground text-xs leading-4'>
+							{formatDate(post?.created_at!)}
 						</p>
 					</div>
 				</div>
 
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<button className='border-none outline-none'>
-							<EllipsisVerticalIcon className='size-5' />
-						</button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem asChild>
-							<button
-								onClick={() => handleEdit(post)}
-								className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
-							>
-								<PencilIcon className='size-4' />
-								Edit
+				{post?.user.id == session?.data?.user.id && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<button className='border-none outline-none'>
+								<EllipsisVerticalIcon className='size-5' />
 							</button>
-						</DropdownMenuItem>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem asChild>
+								<button
+									onClick={() => handleEdit(post)}
+									className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
+								>
+									<PencilIcon className='size-4' />
+									Edit
+								</button>
+							</DropdownMenuItem>
 
-						<DropdownMenuItem asChild>
-							<button className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'>
-								<TrashIcon className='size-4' />
-								Delete
-							</button>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+							<DropdownMenuItem asChild>
+								<button className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'>
+									<TrashIcon className='size-4' />
+									Delete
+								</button>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 			</div>
 
 			<p
@@ -90,32 +99,9 @@ const PostItem = ({ post, handleEdit }: PostItemProps) => {
 				)}
 			</p>
 
-			<div className='mt-4 grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
-				{/* image */}
-				{/* {att.map((a, idx) => (
-					<div key={idx} className='relative'>
-						<Image
-							className='w-full rounded-md h-full object-cover'
-							src={a}
-							width={120}
-							height={120}
-							alt='post-att'
-						/>
-						<button className='border-none outline-none absolute top-2 right-2 bg-background rounded-md p-2'>
-							<DownloadIcon className='size-5 ' />
-						</button>
-					</div>
-				))} */}
-
-				{/* cannot preview file */}
-				<div className='relative rounded-md flex items-center justify-center flex-col w-full h-full bg-[#F8EDFF]'>
-					<FileIcon className='size-20 text-muted-foreground' />
-					<p className='text-muted-foreground text-sm'>file name</p>
-					<button className='border-none outline-none absolute top-2 right-2 bg-background rounded-md p-2'>
-						<DownloadIcon className='size-5 ' />
-					</button>
-				</div>
-			</div>
+			{post.attachments && (
+				<PostAttachments attachments={post?.attachments!} />
+			)}
 
 			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
 				<Button

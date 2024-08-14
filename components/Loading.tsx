@@ -1,6 +1,6 @@
 const Loading = () => {
 	return (
-		<div className='grid min-h-[100px] w-full place-items-center overflow-x-scroll rounded-lg p-2 lg:overflow-visible'>
+		<div className='grid w-full place-items-center overflow-x-scroll rounded-lg p-2 lg:overflow-visible'>
 			<svg
 				className='text-gray-300 animate-spin'
 				viewBox='0 0 64 64'
