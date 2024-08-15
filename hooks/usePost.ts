@@ -1,4 +1,4 @@
-import { addPost, getPosts, updatePost } from '@/actions/post'
+import { addPost, deletePost, getPosts, updatePost } from '@/actions/post'
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 
 const useGetPosts = () => {
@@ -25,10 +25,18 @@ const useUpdateMutation = () => {
 	})
 }
 
+const useDeleteMutation = () => {
+	return useMutation({
+		mutationKey: ['delete', 'deletePost'],
+		mutationFn: deletePost,
+	})
+}
+
 export const usePost = () => {
 	return {
 		useAddMutation,
 		useGetPosts,
 		useUpdateMutation,
+		useDeleteMutation,
 	}
 }

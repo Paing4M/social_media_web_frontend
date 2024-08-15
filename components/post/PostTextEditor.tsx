@@ -183,7 +183,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 								)}
 
 								{attachments.length > 4 && idx == 3 && (
-									<div className='absolute bg-primary/50 top-0 left-0 right-0  bottom-0 flex items-center justify-center text-background cursor-pointer rounded-md'>
+									<div className='absolute bg-primary/60 dark:bg-muted/80 dark:text-white top-0 left-0 right-0 bottom-0 flex items-center justify-center text-background cursor-pointer rounded-md'>
 										{attachments.length - 4} more
 									</div>
 								)}

@@ -32,3 +32,8 @@ export const updatePost = async (data: UpdatePostInterface) => {
 	const res = await Axios.post('/post/' + data.id, updateData)
 	return res.data
 }
+
+export const deletePost = async (id: number) => {
+	const res = await Axios.delete('/post/' + id)
+	return res.data
+}

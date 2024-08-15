@@ -26,9 +26,16 @@ import PostAttachments from './PostAttachments'
 interface PostItemProps {
 	post: Post
 	handleEdit: (post: Post) => void
+	handleDelete: (id: number) => void
+	handlePreview: (attachments: PostAttachmentInterface[], idx: number) => void
 }
 
-const PostItem = ({ post, handleEdit }: PostItemProps) => {
+const PostItem = ({
+	post,
+	handleEdit,
+	handleDelete,
+	handlePreview,
+}: PostItemProps) => {
 	const [seeMore, setseeMore] = useState(false)
 	const session = useSession()
 
@@ -69,7 +76,10 @@ const PostItem = ({ post, handleEdit }: PostItemProps) => {
 							</DropdownMenuItem>
 
 							<DropdownMenuItem asChild>
-								<button className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'>
+								<button
+									onClick={() => handleDelete(post?.id)}
+									className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
+								>
 									<TrashIcon className='size-4' />
 									Delete
 								</button>
@@ -100,7 +110,10 @@ const PostItem = ({ post, handleEdit }: PostItemProps) => {
 			</p>
 
 			{post.attachments && (
-				<PostAttachments attachments={post?.attachments!} />
+				<PostAttachments
+					handlePreview={handlePreview}
+					attachments={post?.attachments!}
+				/>
 			)}
 
 			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>

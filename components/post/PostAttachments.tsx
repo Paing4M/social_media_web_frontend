@@ -4,9 +4,13 @@ import Image from 'next/image'
 
 interface PostAttachmentsProps {
 	attachments: PostAttachmentInterface[]
+	handlePreview: (attachments: PostAttachmentInterface[], idx: number) => void
 }
 
-const PostAttachments = ({ attachments }: PostAttachmentsProps) => {
+const PostAttachments = ({
+	attachments,
+	handlePreview,
+}: PostAttachmentsProps) => {
 	return (
 		<div
 			className={`mt-4 grid gap-3 ${
@@ -16,7 +20,11 @@ const PostAttachments = ({ attachments }: PostAttachmentsProps) => {
 			}`}
 		>
 			{attachments?.slice(0, 4)?.map((att, idx) => (
-				<div key={att.name + idx} className='relative h-full'>
+				<div
+					onClick={() => handlePreview(attachments!, idx)}
+					key={att.name + idx}
+					className='relative h-full cursor-pointer'
+				>
 					{isImage(att) ? (
 						<div className='relative h-full max-h-[350px]'>
 							<Image
@@ -41,6 +49,7 @@ const PostAttachments = ({ attachments }: PostAttachmentsProps) => {
 						</>
 					)}
 					<a
+						onClick={(e) => e.stopPropagation()}
 						href={
 							process.env.NEXT_PUBLIC_API_URL + '/api/download/' + att.id
 						}
@@ -51,7 +60,7 @@ const PostAttachments = ({ attachments }: PostAttachmentsProps) => {
 					</a>
 
 					{attachments && idx == 3 && attachments?.length > 4 && (
-						<div className='absolute bg-primary/50 top-0 left-0 right-0 bottom-0 flex items-center justify-center text-background cursor-pointer rounded-md'>
+						<div className='absolute bg-primary/60 dark:bg-muted/80 dark:text-white top-0 left-0 right-0 bottom-0 flex items-center justify-center text-background cursor-pointer rounded-md'>
 							{attachments?.length - 4} more
 						</div>
 					)}
