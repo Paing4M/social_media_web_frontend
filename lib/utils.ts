@@ -8,16 +8,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function isImage(att: PostAttachmentInterface | File) {
+	let mime
 	if ('mime' in att) {
-		const mime = att.mime
-		const res = mime?.split('/')
-		return res?.[0] === 'image'
+		mime = att.mime
 	} else if ('type' in att) {
-		const mime = att.type
-		const res = mime?.split('/')
-		return res?.[0] === 'image'
+		mime = att.type
 	}
-	return false
+
+	const res = mime?.toLowerCase().split('/')
+	return res?.[0] === 'image'
 }
 
 export function formatDate(date: string): string {
