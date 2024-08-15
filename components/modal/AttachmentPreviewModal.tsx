@@ -44,17 +44,18 @@ const AttachmentPreviewModal = ({
 		>
 			<div className='w-full flex items-center justify-center h-full p-4 relative'>
 				{isImage(attachments[idx]) ? (
-					<Image
-						src={attachments[idx]?.url!}
-						width={400}
-						height={400}
-						className='object-contain'
-						alt='preview-img'
-					/>
+					<div className='relative w-full h-full '>
+						<Image
+							src={attachments[idx]?.url!}
+							className='object-contain '
+							alt='preview-img'
+							fill
+						/>
+					</div>
 				) : (
-					<div className='bg-blue-200 w-full p-4 rounded-lg text-black h-[300px] flex flex-col items-center justify-center gap-4'>
+					<div className='bg-blue-200 max-w-[300px] w-full p-4 rounded-lg text-black h-[300px] flex flex-col items-center justify-center gap-4'>
 						<Paperclip className='size-10' />
-						<small className='w-[70%] text-center text-wrap'>
+						<small className='w-full text-center text-wrap'>
 							{attachments[idx]?.name}
 						</small>
 					</div>
@@ -62,15 +63,15 @@ const AttachmentPreviewModal = ({
 
 				<button
 					onClick={prev}
-					className='absolute top-[50%] left-0 translate-y-[-50%]'
+					className='absolute top-[50%] left-0 translate-y-[-50%] hover:text-white'
 				>
-					<ChevronLeftIcon className='size-20' />
+					<ChevronLeftIcon className='size-14 sm:size-20 ' />
 				</button>
 				<button
 					onClick={next}
-					className='absolute top-[50%] right-0 translate-y-[-50%]'
+					className='absolute top-[50%] right-0 translate-y-[-50%] hover:text-white'
 				>
-					<ChevronRightIcon className='size-20' />
+					<ChevronRightIcon className='size-14 sm:size-20' />
 				</button>
 			</div>
 		</Modal>

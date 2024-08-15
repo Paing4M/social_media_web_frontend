@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import {
 	Dialog,
 	DialogContent,
@@ -26,7 +27,7 @@ const Modal = ({
 				onInteractOutside={(e) => {
 					e.preventDefault()
 				}}
-				className={className}
+				className={cn('overflow-y-auto max-h-screen', className)}
 			>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
