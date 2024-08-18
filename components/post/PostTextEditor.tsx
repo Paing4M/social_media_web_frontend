@@ -15,17 +15,24 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { useQueryClient } from '@tanstack/react-query'
 import { isImage, readFile } from '@/lib/utils'
 import Image from 'next/image'
-import { PaperclipIcon, XIcon } from 'lucide-react'
+import { Divide, PaperclipIcon, XIcon } from 'lucide-react'
+import { v4 as uuidv4 } from 'uuid'
+import PostPreviewAttachments from './PostPreviewAttachments'
 
 interface PostTextEditorProps {
 	user: UserInterface
 }
 
-interface Error {
+export interface Error {
 	body?: [string] | null
+	attachments?: [string] | null
+	attachment?: {
+		[key: string]: string[] | null
+	}
 }
 
-interface Attachment {
+export interface Attachment {
+	id: string
 	file: File
 	url: string
 }
@@ -33,9 +40,29 @@ interface Attachment {
 const PostTextEditor = ({ user }: PostTextEditorProps) => {
 	const [error, setError] = useState<Error | null>(null)
 	const [attachments, setAttachments] = useState<Attachment[] | []>([])
+	const [extWarning, setExtWarning] = useState(false)
 
 	const { useAddMutation } = usePost()
 	const { mutateAsync, isPending } = useAddMutation()
+
+	let extensions = [
+		'jpg',
+		'jpeg',
+		'png',
+		'gif',
+		'webp',
+		'mp3',
+		'wav',
+		'mp4',
+		'doc',
+		'docx',
+		'pdf',
+		'csv',
+		'xls',
+		'xlsx',
+		'zip',
+		'exe',
+	]
 
 	const editor = useEditor({
 		extensions: [
@@ -71,48 +98,77 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 					setAttachments([])
 					toast.success(res?.message)
 					setError(null)
+					setExtWarning(false)
 					editor?.commands.clearContent()
 				},
 			})
 		} catch (err: any) {
-			// console.log(err)
 			if (err?.response?.status == 422) {
-				setError(err?.response?.data?.errors)
+				let errors = err?.response?.data?.errors
+
+				for (let key in errors) {
+					if (key.includes('attachments.')) {
+						let [, idx] = key.split('.')
+						const fileId = attachments[Number(idx)]?.id
+
+						if (fileId) {
+							setError((prev) => ({
+								attachment: {
+									...prev?.attachment,
+									[fileId]: errors?.[key],
+								},
+							}))
+						}
+					} else {
+						setError(errors)
+					}
+				}
 			}
 		}
 	}
 
 	async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+		setExtWarning(false)
 		let files = e.target.files
 		if (files) {
 			for (let i = 0; i < files.length; i++) {
 				const file = files[i]
 
 				let uploadFile = {
+					id: uuidv4(),
 					file: file,
 					url: await readFile(file),
 				}
 
-				setAttachments(
-					(prev) =>
-						[
-							{ ...uploadFile, url: uploadFile.url as string },
-							...prev,
-						] as Attachment[]
-				)
+				let ext = uploadFile.file.name.split('.').pop()
+
+				if (!extensions.includes(ext!)) setExtWarning(true)
+
+				setAttachments((prev) => [
+					{ ...uploadFile, url: uploadFile.url as string },
+					...prev,
+				])
 			}
 		}
 
 		e.target.value = ''
 	}
 
-	function removeUploadFile(file: File) {
-		let removedFile = attachments.filter((att) => att.file !== file)
-		setAttachments(removedFile)
+	function removeUploadFile(id: string) {
+		let updatedAttachments = attachments.filter((att) => att.id !== id)
+		setAttachments(updatedAttachments)
+
+		setError((prev) => {
+			const updatedErrors = { ...prev?.attachment }
+			delete updatedErrors[id]
+			return { ...prev, attachment: updatedErrors }
+		})
 	}
 
+	console.log(extWarning)
+
 	return (
-		<div className='bg-background p-4 rounded-lg shadow-sm border flex flex-col overflow-hidden h-fit max-h-[400px] gap-y-2'>
+		<div className='bg-background p-4 rounded-lg shadow-sm border flex flex-col overflow-hidden h-fit max-h-[500px] gap-y-2'>
 			<div className='flex items-start gap-4'>
 				<UserAvatar src={user?.avatar_url!} name={user?.username!} />
 
@@ -122,7 +178,22 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 						className='w-full max-h-[10rem]  overflow-y-auto bg-muted px-4 py-2 rounded-lg '
 					/>
 
-					{error?.body && <InputError error={error?.body?.[0]} />}
+					{extWarning && (
+						<div className='bg-amber-100 text-sm border-l-4 my-2 py-2 border-amber-500 rounded-md text-gray-600 text-wrap'>
+							<h6 className='px-2'>
+								File must be following extensions:
+							</h6>
+							<small className='px-2'>
+								{extensions.map((ext) => ext).join(', ')}
+							</small>
+						</div>
+					)}
+
+					{error?.attachments?.[0] && (
+						<InputError error={error?.attachments?.[0]!} />
+					)}
+
+					{error?.attachment && <InputError error={'Invalid file'} />}
 
 					<div className='flex items-center justify-end gap-6 mt-3'>
 						<div>
@@ -154,50 +225,11 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 
 			{/* preview attachment */}
 			{attachments.length > 0 && (
-				<div
-					className={`overflow-y-auto grid gap-2 mt-3  h-full ${
-						attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
-					}`}
-				>
-					{attachments?.slice(0, 4)?.map((att, idx) => (
-						<div
-							key={att.file.name + idx}
-							className={`relative overflow-hidden`}
-						>
-							<>
-								{att.url ? (
-									<Image
-										src={att.url}
-										alt='preview-img'
-										width={100}
-										height={100}
-										className='rounded-md w-full h-full object-cover'
-									/>
-								) : (
-									<div className=' bg-blue-400 h-full rounded-md flex flex-col items-center justify-center text-wrap p-4'>
-										<PaperclipIcon className='size-8' />
-										<small className='text-center text-xs '>
-											{att.file.name}
-										</small>
-									</div>
-								)}
-
-								{attachments.length > 4 && idx == 3 && (
-									<div className='absolute bg-primary/60 dark:bg-muted/80 dark:text-white top-0 left-0 right-0 bottom-0 flex items-center justify-center text-background cursor-pointer rounded-md'>
-										{attachments.length - 4} more
-									</div>
-								)}
-							</>
-
-							<button
-								onClick={() => removeUploadFile(att.file)}
-								className='absolute top-1 right-2 bg-secondary-foreground/80 z-10 p-1 rounded-full'
-							>
-								<XIcon className='size-4 text-background' />
-							</button>
-						</div>
-					))}
-				</div>
+				<PostPreviewAttachments
+					error={error!}
+					attachments={attachments}
+					removeUploadFile={removeUploadFile}
+				/>
 			)}
 		</div>
 	)
