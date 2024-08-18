@@ -46,7 +46,7 @@ const PostPreviewAttachments = ({
 							<div
 								className={`bg-blue-400 w-full h-full rounded-md flex flex-col items-center justify-center p-2  ${
 									error?.attachment?.[att.id]
-										? 'border-3 border-red-500'
+										? 'border-2 border-red-500'
 										: ''
 								}`}
 							>
