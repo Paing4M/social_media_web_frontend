@@ -1,24 +1,19 @@
 'use client'
 
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog'
 import { usePost } from '@/hooks/usePost'
 import { useQueryClient } from '@tanstack/react-query'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { FileIcon, UploadIcon, XIcon } from 'lucide-react'
+import { FileIcon, PaperclipIcon, UploadIcon, XIcon } from 'lucide-react'
 import Image from 'next/image'
 import { isImage, readFile } from '@/lib/utils'
 import InputError from '@/app/(auth)/InputError'
 import '../post/style.css'
 import Modal from './Modal'
+import { Attachment, Error, extensions } from '../post/PostTextEditor'
+import { v4 as uuidv4 } from 'uuid'
 
 interface PostModalProps {
 	title?: string
@@ -27,22 +22,15 @@ interface PostModalProps {
 	closeModal: () => void
 }
 
-interface UploadFile {
-	file: File
-	url: string
-}
+interface UploadFile extends Attachment {}
 
-type Attachment = PostAttachmentInterface | UploadFile
-
-type Err = {
-	body: [string]
-	attachments: [string]
-}
+type AttachmentType = PostAttachmentInterface | UploadFile
 
 const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
-	const [error, setError] = useState<Err | null>(null)
-	const [files, setFiles] = useState<Attachment[]>(post?.attachments || [])
+	const [error, setError] = useState<Error | null>(null)
+	const [files, setFiles] = useState<AttachmentType[]>(post?.attachments || [])
 	const [deleteIds, setDeleteIds] = useState<Array<number> | []>([])
+	const [extWarning, setExtWarning] = useState(false)
 
 	const { useUpdateMutation } = usePost()
 	const { mutateAsync, isPending } = useUpdateMutation()
@@ -60,6 +48,12 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	const queryClient = useQueryClient()
+
+	function handleCloseModal() {
+		closeModal()
+		setExtWarning(false)
+		setError(null)
+	}
 
 	const handleUpdate = async () => {
 		let uploadFiles = files
@@ -81,7 +75,7 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 			await mutateAsync(data, {
 				onSuccess: (res) => {
 					// console.log(res)
-					closeModal()
+					handleCloseModal()
 					toast.success(res.message)
 					queryClient.invalidateQueries({
 						queryKey: ['get', 'getPosts'],
@@ -89,9 +83,26 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 				},
 			})
 		} catch (err: any) {
-			console.log(err)
 			if (err?.response?.status == 422) {
-				setError(err?.response?.data?.errors)
+				let errors = err?.response?.data?.errors
+
+				for (let key in errors) {
+					if (key.includes('attachments.')) {
+						let [, idx] = key.split('.')
+						const fileId = files[Number(idx)]?.id
+
+						if (fileId) {
+							setError((prev) => ({
+								attachment: {
+									...prev?.attachment,
+									[fileId]: errors?.[key],
+								},
+							}))
+						}
+					} else {
+						setError(errors)
+					}
+				}
 			}
 		}
 	}
@@ -104,10 +115,15 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 			for (let i = 0; i < selectedFiles.length; i++) {
 				const file = selectedFiles[i]
 
-				const uploadFile: UploadFile = {
+				let uploadFile = {
+					id: uuidv4(),
 					file: file,
-					url: (await readFile(file)) as string,
-				}
+					url: await readFile(file),
+				} as UploadFile
+
+				let ext = uploadFile.file.name.split('.').pop()
+
+				if (!extensions.includes(ext!)) setExtWarning(true)
 
 				newFiles.push(uploadFile)
 			}
@@ -127,12 +143,34 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 		}
 		const removedFile = files.filter((file) => file !== att)
 		setFiles(removedFile)
+
+		setError((prev) => {
+			const updatedErrors = { ...prev?.attachment }
+			delete updatedErrors[(att as UploadFile).id]
+			return { ...prev, attachment: updatedErrors }
+		})
 	}
 
 	return (
 		<Modal title={title} open={open} closeModal={closeModal}>
 			<div className='mt-4 w-full'>
-				{error?.body && <InputError error={error?.body?.[0]} />}
+				{extWarning && (
+					<div className='bg-amber-100 text-sm border-l-4 my-2 py-2 border-amber-500 rounded-md text-gray-600 text-wrap'>
+						<h6 className='px-2'>File must be following extensions:</h6>
+						<small className='px-2'>
+							{extensions.map((ext) => ext).join(', ')}
+						</small>
+					</div>
+				)}
+
+				{error?.attachments?.[0] && (
+					<InputError error={error?.attachments?.[0]!} />
+				)}
+
+				{error?.attachment &&
+					Object.keys(error?.attachment!).length > 0 && (
+						<InputError error={'Invalid file'} />
+					)}
 
 				<EditorContent
 					editor={editor}
@@ -141,10 +179,8 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 
 				{files && (
 					<div
-						className={`h-auto max-h-[500px] overflow-y-auto mt-6 grid gap-2 ${
-							files.length == 1
-								? 'grid-cols-1'
-								: 'grid-cols-1 sm:grid-cols-2'
+						className={`mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4 overflow-y-auto ${
+							files.length === 1 ? 'grid-cols-1' : ''
 						}`}
 					>
 						<label
@@ -162,53 +198,63 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 							/>
 						</label>
 
-						{files?.map((att, idx) => (
+						{files?.map((att) => (
 							<div
 								key={
-									(att as UploadFile)?.file?.name ||
-									(att as PostAttachmentInterface).name + idx
+									(att as UploadFile).id ||
+									(att as PostAttachmentInterface).id
 								}
-								className='relative h-full'
+								className=' w-full h-full rounded-md  flex flex-col items-center '
 							>
-								{isImage((att as UploadFile)?.file || att) ? (
-									<div className='relative h-[300px]'>
-										<Image
-											unoptimized
-											priority
-											className='w-full rounded-md h-full object-cover'
-											src={
-												(att as UploadFile).url! ||
-												(att as PostAttachmentInterface).url!
-											}
-											width={120}
-											height={120}
-											alt='post-att'
-										/>
-									</div>
-								) : (
-									<>
-										{/* cannot preview file */}
-										<div className='relative rounded-md flex items-center justify-center flex-col w-full h-full p-4 bg-[#F8EDFF] gap-2'>
-											<FileIcon className='size-20 text-muted-foreground' />
-											<p className='text-muted-foreground text-xs text-center text-wrap'>
-												{(att as UploadFile).file?.name ||
-													(att as PostAttachmentInterface).name}
-											</p>
-										</div>
-									</>
+								{error?.attachment?.[(att as UploadFile).id] && (
+									<small className='inline-block text-center text-red-500 mb-2'>
+										Invalid File
+									</small>
 								)}
 
-								<button
-									onClick={() =>
-										removeFile(
-											(att as UploadFile) ||
-												(att as PostAttachmentInterface)
-										)
-									}
-									className='border-none outline-none absolute top-2 z-10 right-2 bg-background rounded-md p-2'
-								>
-									<XIcon className='size-5 ' />
-								</button>
+								<div className='w-full relative h-full flex flex-col items-center justify-center'>
+									{isImage((att as UploadFile).file || att) ? (
+										<div className='w-full h-full rounded-md overflow-hidden'>
+											<Image
+												src={
+													(att as UploadFile).url ||
+													(att as PostAttachmentInterface).path ||
+													''
+												}
+												alt='preview-img'
+												width={100}
+												height={100}
+												className='rounded-md w-full h-full object-cover'
+											/>
+										</div>
+									) : (
+										<div
+											className={`bg-blue-400 w-full h-full rounded-md flex flex-col items-center justify-center p-2  ${
+												error?.attachment?.[(att as UploadFile).id]
+													? 'border-2 border-red-500'
+													: ''
+											}`}
+										>
+											<PaperclipIcon className='size-8' />
+											<small className='text-center inline-block text-wrap text-xs mt-2'>
+												{(att as UploadFile).file?.name ||
+													(att as PostAttachmentInterface)?.name}
+											</small>
+										</div>
+									)}
+
+									<button
+										onClick={() =>
+											removeFile(
+												(att as UploadFile) ||
+													(att as PostAttachmentInterface)
+											)
+										}
+										className='absolute top-2 right-2 bg-secondary-foreground/80 z-10 p-1 rounded-full'
+									>
+										<XIcon className='size-4 text-background' />
+									</button>
+								</div>
 							</div>
 						))}
 					</div>

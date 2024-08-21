@@ -34,6 +34,25 @@ export interface Attachment {
 	url: string
 }
 
+export let extensions = [
+	'jpg',
+	'jpeg',
+	'png',
+	'gif',
+	'webp',
+	'mp3',
+	'wav',
+	'mp4',
+	'doc',
+	'docx',
+	'pdf',
+	'csv',
+	'xls',
+	'xlsx',
+	'zip',
+	'exe',
+]
+
 const PostTextEditor = ({ user }: PostTextEditorProps) => {
 	const [error, setError] = useState<Error | null>(null)
 	const [attachments, setAttachments] = useState<Attachment[] | []>([])
@@ -41,25 +60,6 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 
 	const { useAddMutation } = usePost()
 	const { mutateAsync, isPending } = useAddMutation()
-
-	let extensions = [
-		'jpg',
-		'jpeg',
-		'png',
-		'gif',
-		'webp',
-		'mp3',
-		'wav',
-		'mp4',
-		'doc',
-		'docx',
-		'pdf',
-		'csv',
-		'xls',
-		'xlsx',
-		'zip',
-		'exe',
-	]
 
 	const editor = useEditor({
 		extensions: [
@@ -151,6 +151,8 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 		e.target.value = ''
 	}
 
+	console.log(error)
+
 	function removeUploadFile(id: string) {
 		let updatedAttachments = attachments.filter((att) => att.id !== id)
 		setAttachments(updatedAttachments)
@@ -161,8 +163,6 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 			return { ...prev, attachment: updatedErrors }
 		})
 	}
-
-	console.log(extWarning)
 
 	return (
 		<div className='bg-background p-4 rounded-lg shadow-sm border flex flex-col overflow-hidden h-fit max-h-[500px] gap-y-2'>
@@ -186,11 +186,16 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 						</div>
 					)}
 
-					{error?.attachments?.[0] && (
+					{error?.body?.[0] && <InputError error={error?.body?.[0]!} />}
+
+					{error?.attachments?.[0] !== error?.body?.[0] && (
 						<InputError error={error?.attachments?.[0]!} />
 					)}
 
-					{error?.attachment && <InputError error={'Invalid file'} />}
+					{error?.attachment &&
+						Object.keys(error?.attachment!).length > 0 && (
+							<InputError error={'Invalid file'} />
+						)}
 
 					<div className='flex items-center justify-end gap-6 mt-3'>
 						<div>
