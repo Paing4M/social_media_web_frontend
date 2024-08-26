@@ -27,7 +27,7 @@ const PostPreviewAttachments = ({
 				>
 					{error?.attachment?.[att.id] && (
 						<small className='inline-block text-center text-red-500 mb-2'>
-							Invalid File
+							{error?.attachment?.[att.id]}
 						</small>
 					)}
 
@@ -45,7 +45,7 @@ const PostPreviewAttachments = ({
 						) : (
 							<div
 								className={`bg-blue-400 w-full h-full rounded-md flex flex-col items-center justify-center p-2  ${
-									error?.attachment?.[att.id]
+									error?.attachment?.[att.id]?.[0]
 										? 'border-2 border-red-500'
 										: ''
 								}`}

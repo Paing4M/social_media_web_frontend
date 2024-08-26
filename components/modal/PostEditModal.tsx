@@ -4,7 +4,7 @@ import { usePost } from '@/hooks/usePost'
 import { useQueryClient } from '@tanstack/react-query'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FileIcon, PaperclipIcon, UploadIcon, XIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -46,7 +46,6 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 		immediatelyRender: false,
 	})
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
-
 	const queryClient = useQueryClient()
 
 	function handleCloseModal() {
@@ -121,9 +120,10 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 					url: await readFile(file),
 				} as UploadFile
 
-				let ext = uploadFile.file.name.split('.').pop()
-
-				if (!extensions.includes(ext!)) setExtWarning(true)
+				// let ext = uploadFile.file?.name?.split('.').pop()
+				// if (!extensions.includes(ext!)) {
+				// 	setExtWarning(true)
+				// }
 
 				newFiles.push(uploadFile)
 			}
@@ -134,8 +134,17 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 		e.target.value = ''
 	}
 
+	useEffect(() => {
+		const hasInvalidFile = files.some((file) => {
+			const ext = (file as UploadFile).file?.name?.split('.').pop()
+			return ext && !extensions.includes(ext)
+		})
+
+		setExtWarning(hasInvalidFile)
+	}, [files])
+
 	async function removeFile(att: PostAttachmentInterface | UploadFile) {
-		if ((att as PostAttachmentInterface).id) {
+		if ((att as PostAttachmentInterface).id && !(att as UploadFile).file) {
 			setDeleteIds((prev) => [
 				...prev!,
 				(att as PostAttachmentInterface).id!,
@@ -169,7 +178,7 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 
 				{error?.attachment &&
 					Object.keys(error?.attachment!).length > 0 && (
-						<InputError error={'Invalid file'} />
+						<InputError error={'Invalid file found. Please remove it.'} />
 					)}
 
 				<EditorContent
@@ -208,7 +217,7 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 							>
 								{error?.attachment?.[(att as UploadFile).id] && (
 									<small className='inline-block text-center text-red-500 mb-2'>
-										Invalid File
+										{error?.attachment?.[(att as UploadFile).id]}
 									</small>
 								)}
 
@@ -229,16 +238,16 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 										</div>
 									) : (
 										<div
-											className={`bg-blue-400 w-full h-full rounded-md flex flex-col items-center justify-center p-2  ${
+											className={`bg-blue-400 w-full h-full rounded-md flex overflow-hidden flex-col items-center justify-center p-2  ${
 												error?.attachment?.[(att as UploadFile).id]
 													? 'border-2 border-red-500'
 													: ''
 											}`}
 										>
 											<PaperclipIcon className='size-8' />
-											<small className='text-center inline-block text-wrap text-xs mt-2'>
+											<small className='text-center inline-block text-wrap text-xs mt-2 w-full'>
 												{(att as UploadFile).file?.name ||
-													(att as PostAttachmentInterface)?.name}
+													(att as PostAttachmentInterface).name}
 											</small>
 										</div>
 									)}

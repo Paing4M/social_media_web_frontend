@@ -4,7 +4,7 @@ import UserAvatar from '../avatar/UserAvatar'
 import './style.css'
 import { Button } from '../ui/button'
 import { usePost } from '@/hooks/usePost'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import Loading from '../Loading'
@@ -137,10 +137,6 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 					url: await readFile(file),
 				}
 
-				let ext = uploadFile.file.name.split('.').pop()
-
-				if (!extensions.includes(ext!)) setExtWarning(true)
-
 				setAttachments((prev) => [
 					{ ...uploadFile, url: uploadFile.url as string },
 					...prev,
@@ -151,7 +147,16 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 		e.target.value = ''
 	}
 
-	console.log(error)
+	// console.log(error)
+
+	useEffect(() => {
+		const hasInvalidFile = attachments.some((file) => {
+			const ext = file.file?.name?.split('.').pop()
+			return ext && !extensions.includes(ext)
+		})
+
+		setExtWarning(hasInvalidFile)
+	}, [attachments])
 
 	function removeUploadFile(id: string) {
 		let updatedAttachments = attachments.filter((att) => att.id !== id)
@@ -194,7 +199,9 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 
 					{error?.attachment &&
 						Object.keys(error?.attachment!).length > 0 && (
-							<InputError error={'Invalid file'} />
+							<InputError
+								error={'Invalid file found. Please remove it.'}
+							/>
 						)}
 
 					<div className='flex items-center justify-end gap-6 mt-3'>
