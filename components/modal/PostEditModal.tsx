@@ -73,7 +73,7 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 		try {
 			await mutateAsync(data, {
 				onSuccess: (res) => {
-					console.log(res)
+					// console.log(res)
 					handleCloseModal()
 					toast.success(res.message)
 

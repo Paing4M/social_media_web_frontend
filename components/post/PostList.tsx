@@ -79,9 +79,27 @@ const PostList = () => {
 
 			reactionMutateAsync(data, {
 				onSuccess: (res) => {
-					queryClient.invalidateQueries({
-						queryKey: ['get', 'getPosts'],
-					})
+					queryClient.setQueryData(
+						['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]>) => {
+							if (!oldData) return
+							const newData = {
+								...oldData,
+								pages: oldData.pages.map((page) => {
+									return {
+										...page,
+										data: page.data.map((post) =>
+											post.id === res.post.id
+												? { ...post, ...res.post }
+												: post
+										),
+									}
+								}),
+							}
+
+							return newData
+						}
+					)
 				},
 			})
 		} catch (err) {

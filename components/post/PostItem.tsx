@@ -119,8 +119,10 @@ const PostItem = ({
 				<Button
 					onClick={() => handleReaction(post.id)}
 					variant={'secondary'}
-					className={`flex items-center gap-2 w-full justify-center bg-secondary hover:bg-muted-foreground hover:text-white transition ${
-						post.reacted_by_user ? 'bg-muted-foreground text-white' : ''
+					className={`flex items-center gap-2 w-full justify-center bg-secondary  transition ${
+						post.reacted_by_user
+							? 'bg-muted-foreground text-white hover:bg-muted-foreground'
+							: ''
 					}`}
 				>
 					<ThumbsUpIcon className='size-5' />
@@ -134,7 +136,7 @@ const PostItem = ({
 
 				<Button
 					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary hover:bg-muted-foreground hover:text-white transition'
+					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary  transition'
 				>
 					<MessageSquareIcon className='size-5' /> Comment
 				</Button>
