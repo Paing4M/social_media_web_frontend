@@ -10,8 +10,9 @@ interface UpdatePostInterface {
 	_method?: string
 }
 
-interface GetPostsInterface {
-	cursor?: string | null
+export interface ReactionData {
+	reaction: string
+	id: number
 }
 
 export const addPost = async (data: AddPostInterface) => {
@@ -35,5 +36,12 @@ export const updatePost = async (data: UpdatePostInterface) => {
 
 export const deletePost = async (id: number) => {
 	const res = await Axios.delete('/post/' + id)
+	return res.data
+}
+
+export const createPostReaction = async (data: ReactionData) => {
+	const res = await Axios.post(`/post/${data.id}/reaction`, {
+		reaction: data.reaction,
+	})
 	return res.data
 }

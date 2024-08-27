@@ -2,11 +2,8 @@
 
 import { useState } from 'react'
 import UserAvatar from '../avatar/UserAvatar'
-import Image from 'next/image'
 import {
-	DownloadIcon,
 	EllipsisVerticalIcon,
-	FileIcon,
 	MessageSquareIcon,
 	PencilIcon,
 	ThumbsUpIcon,
@@ -19,7 +16,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 } from '../ui/dropdown-menu'
-import { formatDate, isImage } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import PostAttachments from './PostAttachments'
 
@@ -28,6 +25,7 @@ interface PostItemProps {
 	handleEdit: (post: Post) => void
 	handleDelete: (id: number) => void
 	handlePreview: (attachments: PostAttachmentInterface[], idx: number) => void
+	handleReaction: (id: number) => void
 }
 
 const PostItem = ({
@@ -35,6 +33,7 @@ const PostItem = ({
 	handleEdit,
 	handleDelete,
 	handlePreview,
+	handleReaction,
 }: PostItemProps) => {
 	const [seeMore, setseeMore] = useState(false)
 	const session = useSession()
@@ -118,16 +117,24 @@ const PostItem = ({
 
 			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
 				<Button
+					onClick={() => handleReaction(post.id)}
 					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center bg-secondary hover:bg-muted-foreground/80 hover:text-white transition'
+					className={`flex items-center gap-2 w-full justify-center bg-secondary hover:bg-muted-foreground hover:text-white transition ${
+						post.reacted_by_user ? 'bg-muted-foreground text-white' : ''
+					}`}
 				>
 					<ThumbsUpIcon className='size-5' />
-					Like
+					{post.reaction_count > 0 && (
+						<span className='inline-block mr-1'>
+							( {post.reaction_count} )
+						</span>
+					)}
+					{post.reacted_by_user ? 'Liked' : 'Like'}
 				</Button>
 
 				<Button
 					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary hover:bg-muted-foreground/80 hover:text-white transition'
+					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary hover:bg-muted-foreground hover:text-white transition'
 				>
 					<MessageSquareIcon className='size-5' /> Comment
 				</Button>

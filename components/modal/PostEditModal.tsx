@@ -73,12 +73,32 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 		try {
 			await mutateAsync(data, {
 				onSuccess: (res) => {
-					// console.log(res)
+					console.log(res)
 					handleCloseModal()
 					toast.success(res.message)
-					queryClient.invalidateQueries({
-						queryKey: ['get', 'getPosts'],
-					})
+
+					// update the post
+					queryClient.setQueryData(
+						['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]>) => {
+							if (!oldData) return
+							const newData = {
+								...oldData,
+								pages: oldData.pages.map((page) => {
+									return {
+										...page,
+										data: page.data.map((post) =>
+											post.id === res.post.id
+												? { ...post, ...res.post }
+												: post
+										),
+									}
+								}),
+							}
+
+							return newData
+						}
+					)
 				},
 			})
 		} catch (err: any) {

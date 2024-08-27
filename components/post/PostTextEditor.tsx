@@ -88,9 +88,22 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 			await mutateAsync(data, {
 				onSuccess: (res) => {
 					// console.log(res)
-					queryClient.invalidateQueries({
-						queryKey: ['get', 'getPosts'],
-					})
+					queryClient.setQueryData(
+						['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]>) => {
+							const newData = {
+								...oldData,
+								pages: oldData.pages.map((page) => {
+									return {
+										...page,
+										data: [res?.post, ...page.data],
+									}
+								}),
+							}
+
+							return newData
+						}
+					)
 
 					setAttachments([])
 					toast.success(res?.message)

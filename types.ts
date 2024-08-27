@@ -25,6 +25,8 @@ type Post = {
 	group: any | null
 	user: UserInterface
 	attachments?: PostAttachmentInterface[] | null
+	reaction_count: number
+	reacted_by_user: boolean
 	created_at?: string
 }
 
@@ -52,4 +54,9 @@ interface PostAttachmentInterface {
 	created_by?: string
 	created_at?: string
 	updated_at?: string
+}
+
+interface QueryDataInterface<T> {
+	pageParams: [string] | null
+	pages: [ApiResponse<T>]
 }
