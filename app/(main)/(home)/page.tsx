@@ -7,8 +7,6 @@ import {
 	QueryClient,
 } from '@tanstack/react-query'
 import { getPosts } from '@/actions/post'
-import { Suspense } from 'react'
-import Loading from '@/components/Loading'
 
 interface SearchParamsInterace {
 	search?: string
@@ -25,11 +23,9 @@ export default async function Home({ search }: SearchParamsInterace) {
 	})
 
 	return (
-		<>
+		<HydrationBoundary state={dehydrate(queryClient)}>
 			<PostTextEditor user={session?.user!} />
-			<HydrationBoundary state={dehydrate(queryClient)}>
-				<PostList />
-			</HydrationBoundary>
-		</>
+			<PostList />
+		</HydrationBoundary>
 	)
 }

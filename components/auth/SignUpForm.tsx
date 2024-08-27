@@ -128,7 +128,7 @@ const SignUpForm = () => {
 				disabled={isPending}
 				type='submit'
 				className={`w-full text-white  focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-					isPending ? 'bg-primary/80' : 'bg-primary'
+					isPending ? 'bg-secondary/80' : 'bg-secondary'
 				}`}
 			>
 				{isPending ? 'Processing...' : 'Sign Up'}

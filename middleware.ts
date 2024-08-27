@@ -2,7 +2,11 @@ import { auth } from '@/app/api/auth/[...nextauth]/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 export default auth((req, res) => {
-	if (req.nextUrl.pathname === '/' && !req.auth) {
+	if (
+		(req.nextUrl.pathname === '/' ||
+			req.nextUrl.pathname.includes('profile')) &&
+		!req.auth
+	) {
 		return NextResponse.redirect(new URL('/login', req.url))
 	}
 	if (
@@ -15,5 +19,5 @@ export default auth((req, res) => {
 })
 
 export const config = {
-	matcher: ['/', '/login', '/signup'],
+	matcher: ['/', '/login', '/signup', '/profile/:path*'],
 }

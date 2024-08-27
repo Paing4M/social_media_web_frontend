@@ -67,6 +67,8 @@ const PostList = () => {
 		setOpenPreview(false)
 	}
 
+	if (isFetching && !isFetchingNextPage) return <Loading />
+
 	return (
 		<>
 			<InfiniteScrollContainer
