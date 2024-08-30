@@ -19,6 +19,13 @@ import {
 import { formatDate } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import PostAttachments from './PostAttachments'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@radix-ui/react-accordion'
+import PostComment from './PostComment'
 
 interface PostItemProps {
 	post: Post
@@ -43,7 +50,7 @@ const PostItem = ({
 			<div className='flex items-center justify-between'>
 				<div className='flex items-start gap-3'>
 					<UserAvatar
-						name={post?.user?.name!}
+						name={post?.user?.username!}
 						src={post?.user?.avatar_url!}
 					/>
 					<div>
@@ -115,32 +122,45 @@ const PostItem = ({
 				/>
 			)}
 
-			<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
-				<Button
-					onClick={() => handleReaction(post.id)}
-					variant={'secondary'}
-					className={`flex items-center gap-2 w-full justify-center bg-secondary  transition ${
-						post.reacted_by_user
-							? 'bg-muted-foreground text-white hover:bg-muted-foreground'
-							: ''
-					}`}
-				>
-					<ThumbsUpIcon className='size-5' />
-					{post.reaction_count > 0 && (
-						<span className='inline-block mr-1'>
-							( {post.reaction_count} )
-						</span>
-					)}
-					{post.reacted_by_user ? 'Liked' : 'Like'}
-				</Button>
+			<Accordion type='single' collapsible>
+				<AccordionItem value='comments'>
+					<div className='mt-4 grid grid-cols-2 gap-4 py-2'>
+						<Button
+							onClick={() => handleReaction(post.id)}
+							variant={'secondary'}
+							className={`flex items-center gap-2 w-full justify-center bg-secondary  transition ${
+								post.reacted_by_user
+									? 'bg-muted-foreground text-white hover:bg-muted-foreground'
+									: ''
+							}`}
+						>
+							<ThumbsUpIcon className='size-5' />
+							{post.reaction_count > 0 && (
+								<span className='inline-block mr-1'>
+									( {post.reaction_count} )
+								</span>
+							)}
+							{post.reacted_by_user ? 'Liked' : 'Like'}
+						</Button>
 
-				<Button
-					variant={'secondary'}
-					className='flex items-center gap-2 w-full justify-center py-2  bg-secondary  transition'
-				>
-					<MessageSquareIcon className='size-5' /> Comment
-				</Button>
-			</div>
+						<AccordionTrigger asChild>
+							<Button
+								variant={'secondary'}
+								className={`flex items-center gap-2 w-full justify-center py-2  bg-secondary  transition data-[state='open']:bg-muted-foreground data-[state='open']:text-white`}
+							>
+								<MessageSquareIcon className='size-5' /> Comment
+							</Button>
+						</AccordionTrigger>
+					</div>
+
+					<AccordionContent
+						className='data-[state=open]:animate-accordion-down 
+            data-[state=closed]:animate-accordion-up '
+					>
+						<PostComment post={post} />
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
 		</div>
 	)
 }

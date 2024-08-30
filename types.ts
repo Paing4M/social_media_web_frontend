@@ -27,7 +27,20 @@ type Post = {
 	attachments?: PostAttachmentInterface[] | null
 	reaction_count: number
 	reacted_by_user: boolean
+	comments: CommentType[]
 	created_at?: string
+}
+
+type CommentType = {
+	id: number
+	user: CmtUserType
+	comment: string
+	created_at: string
+}
+
+type CmtUserType = {
+	username: string
+	avatar_url: string
 }
 
 type Links = {

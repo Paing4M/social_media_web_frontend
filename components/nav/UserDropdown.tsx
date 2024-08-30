@@ -56,7 +56,7 @@ const UserDropdown = () => {
 			<DropdownMenuTrigger className='outline-none border-none'>
 				<UserAvatar
 					src={data?.user?.avatar_url!}
-					name={data?.user?.name!}
+					name={data?.user?.username!}
 				/>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='min-w-fit'>
