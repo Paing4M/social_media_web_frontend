@@ -26,6 +26,7 @@ import {
 	AccordionTrigger,
 } from '@radix-ui/react-accordion'
 import PostComment from './PostComment'
+import SeeMore from './SeeMore'
 
 interface PostItemProps {
 	post: Post
@@ -42,7 +43,6 @@ const PostItem = ({
 	handlePreview,
 	handleReaction,
 }: PostItemProps) => {
-	const [seeMore, setseeMore] = useState(false)
 	const session = useSession()
 
 	return (
@@ -95,25 +95,7 @@ const PostItem = ({
 				)}
 			</div>
 
-			<p
-				onClick={() => setseeMore((prev) => !prev)}
-				className='mt-2 select-none '
-			>
-				{post?.body?.length > 100 && !seeMore
-					? post?.body?.slice(0, 100)
-					: post?.body}{' '}
-				{post?.body?.length > 100 && !seeMore && (
-					<span
-						onClick={(e) => {
-							e.stopPropagation()
-							setseeMore((prev) => !prev)
-						}}
-						className='text-blue-500 cursor-pointer text-sm'
-					>
-						more ...
-					</span>
-				)}
-			</p>
+			{post?.body && <SeeMore text={post?.body} className='mt-2' />}
 
 			{post.attachments && (
 				<PostAttachments

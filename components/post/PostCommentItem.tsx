@@ -1,5 +1,6 @@
 import { formatDate } from '@/lib/utils'
 import UserAvatar from '../avatar/UserAvatar'
+import SeeMore from './SeeMore'
 
 interface PostCommentProps {
 	comment: CommentType
@@ -22,7 +23,8 @@ const PostCommentItem = ({ comment }: PostCommentProps) => {
 						</span>
 					</div>
 				</div>
-				<p className='text-sm'>{comment?.comment}</p>
+
+				<SeeMore text={comment?.comment!} className='text-sm' />
 			</div>
 		</div>
 	)
