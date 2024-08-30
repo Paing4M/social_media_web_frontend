@@ -15,6 +15,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { readFile } from '@/lib/utils'
 import { v4 as uuidv4 } from 'uuid'
 import PostPreviewAttachments from './PostPreviewAttachments'
+import { useCustomEditor } from '../UseCustomEditor'
 
 interface PostTextEditorProps {
 	user: UserInterface
@@ -61,19 +62,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 	const { useAddMutation } = usePost()
 	const { mutateAsync, isPending } = useAddMutation()
 
-	const editor = useEditor({
-		extensions: [
-			StarterKit.configure({
-				bold: false,
-				italic: false,
-			}),
-			Placeholder.configure({
-				placeholder: "What's on your mind ...",
-			}),
-		],
-		immediatelyRender: false,
-	})
-
+	const editor = useCustomEditor({ placeholder: "What's on your mind ..." })
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	const queryClient = useQueryClient()

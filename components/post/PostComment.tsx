@@ -11,6 +11,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Placeholder from '@tiptap/extension-placeholder'
+import { useCustomEditor } from '../UseCustomEditor'
 
 type PostCommentProps = {
 	post: Post
@@ -21,13 +25,15 @@ type CmtError = {
 }
 
 const PostComment = ({ post }: PostCommentProps) => {
-	const [input, setInput] = useState('')
+	// const [input, setInput] = useState('')
 	const [error, setError] = useState<CmtError | null>(null)
 	const { useCreateComment } = useComment()
 	const { mutateAsync, isPending } = useCreateComment()
 
 	const queryClient = useQueryClient()
 	const session = useSession()
+	const editor = useCustomEditor({ placeholder: 'Write a comment...' })
+	const input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	const handleComment = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -66,7 +72,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 					)
 
 					toast.success(res?.message)
-					setInput('')
+					editor?.commands.clearContent()
 					setError(null)
 				},
 			})
@@ -79,39 +85,36 @@ const PostComment = ({ post }: PostCommentProps) => {
 	}
 
 	return (
-		<form
-			onSubmit={handleComment}
-			className='mt-3 py-2 h-fit max-h-[500px]  flex flex-col '
-		>
-			<div className='flex items-start gap-2'>
-				<UserAvatar
-					name={session?.data?.user.username!}
-					src={session?.data?.user?.avatar_url!}
-				/>
-				<div className='w-full'>
-					<Input
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						placeholder='Write a comment'
+		<div className='mt-3 py-2 h-fit max-h-[500px]  flex flex-col '>
+			<form onSubmit={handleComment}>
+				<div className='flex items-start gap-2'>
+					<UserAvatar
+						name={session?.data?.user.username!}
+						src={session?.data?.user?.avatar_url!}
 					/>
+					<div className='w-full'>
+						<EditorContent
+							editor={editor}
+							className='w-full max-h-[10rem]  overflow-y-auto bg-muted px-4 py-2 rounded-lg '
+						/>
 
-					{error?.comment && <InputError error={error?.comment?.[0]} />}
+						{error?.comment && <InputError error={error?.comment?.[0]} />}
+					</div>
 				</div>
-			</div>
 
-			<div className='flex gap-3 justify-end mt-2'>
-				<AccordionTrigger asChild>
-					<Button variant={'outline'}>Cancle</Button>
-				</AccordionTrigger>
-				<Button
-					disabled={!input || isPending}
-					type='submit'
-					className='bg-muted-foreground text-white hover:bg-muted-foreground/80 '
-				>
-					Send
-				</Button>
-			</div>
-
+				<div className='flex gap-3 justify-end mt-2'>
+					<AccordionTrigger asChild>
+						<Button variant={'outline'}>Cancle</Button>
+					</AccordionTrigger>
+					<Button
+						disabled={!input || isPending}
+						type='submit'
+						className='bg-muted-foreground text-white hover:bg-muted-foreground/80 '
+					>
+						Send
+					</Button>
+				</div>
+			</form>
 			{/* comments */}
 			{post?.comments && post?.comments.length > 0 && (
 				<div className='mt-4 flex-1   h-full overflow-y-auto'>
@@ -120,7 +123,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 					))}
 				</div>
 			)}
-		</form>
+		</div>
 	)
 }
 

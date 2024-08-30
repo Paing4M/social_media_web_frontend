@@ -21,9 +21,9 @@ const SeeMore = ({ text, className }: SeeMoreProps) => {
 						e.stopPropagation()
 						setseeMore((prev) => !prev)
 					}}
-					className='text-blue-500 cursor-pointer text-sm'
+					className='text-blue-500 ml-1 cursor-pointer text-sm'
 				>
-					more ...
+					see more ...
 				</span>
 			)}
 		</p>

@@ -14,6 +14,7 @@ import '../post/style.css'
 import Modal from './Modal'
 import { Attachment, Error, extensions } from '../post/PostTextEditor'
 import { v4 as uuidv4 } from 'uuid'
+import { useCustomEditor } from '../UseCustomEditor'
 
 interface PostModalProps {
 	title?: string
@@ -35,17 +36,9 @@ const PostEditModal = ({ post, open, closeModal, title }: PostModalProps) => {
 	const { useUpdateMutation } = usePost()
 	const { mutateAsync, isPending } = useUpdateMutation()
 
-	const editor = useEditor({
-		content: post?.body,
-		extensions: [
-			StarterKit.configure({
-				bold: false,
-				italic: false,
-			}),
-		],
-		immediatelyRender: false,
-	})
+	const editor = useCustomEditor({ content: post?.body })
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
+
 	const queryClient = useQueryClient()
 
 	function handleCloseModal() {
