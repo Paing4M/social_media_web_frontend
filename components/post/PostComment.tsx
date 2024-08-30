@@ -79,7 +79,10 @@ const PostComment = ({ post }: PostCommentProps) => {
 	}
 
 	return (
-		<form onSubmit={handleComment} className='mt-3 h-full'>
+		<form
+			onSubmit={handleComment}
+			className='mt-3 h-fit max-h-[500px] overflow-hidden flex flex-col '
+		>
 			<div className='flex items-start gap-2'>
 				<UserAvatar
 					name={session?.data?.user.username!}
@@ -111,7 +114,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 
 			{/* comments */}
 			{post?.comments && post?.comments.length > 0 && (
-				<div className='mt-4 pb-b h-full max-h-[300px] overflow-y-auto'>
+				<div className='mt-4 flex-1 pb-b h-full overflow-y-auto'>
 					{post?.comments.slice(0, 5).map((comment) => (
 						<PostCommentItem key={comment.id} comment={comment} />
 					))}
