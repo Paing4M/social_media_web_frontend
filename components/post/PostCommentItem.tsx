@@ -103,7 +103,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 		try {
 			await deleteCmtAsync(comment.id, {
 				onSuccess: (res) => {
-					console.log(res)
+					// console.log(res)
 
 					// delete the post comment
 					queryClient.setQueryData(
@@ -123,6 +123,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 													comments: post.comments?.filter(
 														(cmt) => cmt.id !== res.comment?.id
 													),
+													comment_count: post.comment_count - 1,
 											  }
 											: post
 									),

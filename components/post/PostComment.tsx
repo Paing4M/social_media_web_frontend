@@ -60,6 +60,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 														res.comment,
 														...post.comments,
 													],
+													comment_count: post.comment_count + 1,
 											  }
 											: post
 									),

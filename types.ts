@@ -28,6 +28,7 @@ type Post = {
 	reaction_count: number
 	reacted_by_user: boolean
 	comments: CommentType[]
+	comment_count: number
 	created_at?: string
 }
 

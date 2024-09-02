@@ -130,7 +130,13 @@ const PostItem = ({
 								variant={'secondary'}
 								className={`flex items-center gap-2 w-full justify-center py-2  bg-secondary  transition data-[state='open']:bg-muted-foreground data-[state='open']:text-white`}
 							>
-								<MessageSquareIcon className='size-5' /> Comment
+								<MessageSquareIcon className='size-5' />
+								{post.comment_count > 0 && (
+									<span className='inline-block mr-1'>
+										( {post.comment_count} )
+									</span>
+								)}
+								Comment
 							</Button>
 						</AccordionTrigger>
 					</div>
