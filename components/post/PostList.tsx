@@ -47,10 +47,31 @@ const PostList = () => {
 			await mutateAsync(id, {
 				onSuccess: (res) => {
 					console.log(res)
+
+					// delete the post
+					queryClient.setQueryData(
+						['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]>) => {
+							if (!oldData) return
+							const newData = {
+								...oldData,
+								pages: oldData.pages.map((page) => {
+									let updatedPost = page.data.filter(
+										(post) => post.id !== res?.post_id
+									)
+
+									return {
+										...page,
+										data: updatedPost,
+									}
+								}),
+							}
+
+							return newData
+						}
+					)
+
 					toast.success(res.message)
-					queryClient.invalidateQueries({
-						queryKey: ['get', 'getPosts'],
-					})
 				},
 			})
 		} catch (err) {

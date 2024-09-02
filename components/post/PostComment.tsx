@@ -85,7 +85,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 	}
 
 	return (
-		<div className='mt-3 py-2 h-fit max-h-[500px]  flex flex-col '>
+		<div className='mt-2 border-t-2 py-3 h-fit max-h-[500px]  flex flex-col '>
 			<form onSubmit={handleComment}>
 				<div className='flex items-start gap-2'>
 					<UserAvatar
