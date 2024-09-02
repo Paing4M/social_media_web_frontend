@@ -39,6 +39,7 @@ type CommentType = {
 }
 
 type CmtUserType = {
+	id: number
 	username: string
 	avatar_url: string
 }

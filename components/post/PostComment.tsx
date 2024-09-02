@@ -12,34 +12,33 @@ import { useState } from 'react'
 import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
 import { useCustomEditor } from '../UseCustomEditor'
 
 type PostCommentProps = {
 	post: Post
 }
 
-type CmtError = {
+export type CmtError = {
 	comment: [string]
 }
 
 const PostComment = ({ post }: PostCommentProps) => {
-	// const [input, setInput] = useState('')
 	const [error, setError] = useState<CmtError | null>(null)
 	const { useCreateComment } = useComment()
 	const { mutateAsync, isPending } = useCreateComment()
 
 	const queryClient = useQueryClient()
 	const session = useSession()
+
 	const editor = useCustomEditor({ placeholder: 'Write a comment...' })
+
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	const handleComment = async (e: React.FormEvent) => {
 		e.preventDefault()
 		try {
 			const data = {
-				id: post?.id,
+				post_id: post?.id,
 				comment: input,
 			}
 			await mutateAsync(data, {
@@ -77,7 +76,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 				},
 			})
 		} catch (err: any) {
-			console.log(err)
+			// console.log(err)
 			if (err?.response.status === 422) {
 				setError(err?.response?.data?.errors)
 			}
@@ -119,7 +118,11 @@ const PostComment = ({ post }: PostCommentProps) => {
 			{post?.comments && post?.comments.length > 0 && (
 				<div className='mt-4 flex-1   h-full overflow-y-auto'>
 					{post?.comments.slice(0, 5).map((comment) => (
-						<PostCommentItem key={comment.id} comment={comment} />
+						<PostCommentItem
+							postId={post.id}
+							key={comment.id}
+							comment={comment}
+						/>
 					))}
 				</div>
 			)}

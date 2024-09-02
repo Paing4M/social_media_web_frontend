@@ -46,7 +46,7 @@ const PostList = () => {
 		try {
 			await mutateAsync(id, {
 				onSuccess: (res) => {
-					console.log(res)
+					// console.log(res)
 
 					// delete the post
 					queryClient.setQueryData(
@@ -140,7 +140,7 @@ const PostList = () => {
 			>
 				{posts?.map((post) => (
 					<PostItem
-						key={post.id}
+						key={post?.id}
 						post={post!}
 						handleEdit={handleEdit}
 						handlePreview={handlePreview}
