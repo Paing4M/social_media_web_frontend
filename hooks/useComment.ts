@@ -1,4 +1,4 @@
-import { addComment, updateComment } from '@/actions/comment'
+import { addComment, deleteComment, updateComment } from '@/actions/comment'
 import { useMutation } from '@tanstack/react-query'
 
 const useCreateComment = () => {
@@ -15,9 +15,17 @@ const useUpdateComment = () => {
 	})
 }
 
+const useDeleteComment = () => {
+	return useMutation({
+		mutationKey: ['delete', 'comment'],
+		mutationFn: deleteComment,
+	})
+}
+
 export const useComment = () => {
 	return {
 		useCreateComment,
 		useUpdateComment,
+		useDeleteComment,
 	}
 }

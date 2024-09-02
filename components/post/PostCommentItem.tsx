@@ -31,8 +31,9 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 	const [error, setError] = useState<CmtError | null>(null)
 
 	const { data } = useSession()
-	const { useUpdateComment } = useComment()
+	const { useUpdateComment, useDeleteComment } = useComment()
 	const { mutateAsync: updateCmtAsync, isPending } = useUpdateComment()
+	const { mutateAsync: deleteCmtAsync } = useDeleteComment()
 	const queryClient = useQueryClient()
 
 	function handleEdit() {
@@ -50,7 +51,6 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 		try {
 			let data = {
 				id: comment?.id,
-				post_id: postId,
 				comment: input,
 			}
 			await updateCmtAsync(data, {
@@ -69,7 +69,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 								pages: oldData.pages.map((page) => ({
 									...page,
 									data: page.data.map((post) =>
-										post.id === res.post_id
+										post.id === postId
 											? {
 													...post,
 													comments: post.comments?.map((cmt) =>
@@ -96,6 +96,49 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 			if (err?.response?.status === 422) {
 				setError(err?.response?.data?.errors)
 			}
+		}
+	}
+
+	async function handleDelete() {
+		try {
+			await deleteCmtAsync(comment.id, {
+				onSuccess: (res) => {
+					console.log(res)
+
+					// delete the post comment
+					queryClient.setQueryData(
+						['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]> | undefined) => {
+							if (!oldData) return
+
+							// update the post comment
+							const newData = {
+								...oldData,
+								pages: oldData.pages.map((page) => ({
+									...page,
+									data: page.data.map((post) =>
+										post.id === postId
+											? {
+													...post,
+													comments: post.comments?.filter(
+														(cmt) => cmt.id !== res.comment?.id
+													),
+											  }
+											: post
+									),
+								})),
+							}
+
+							return newData
+						}
+					)
+
+					cancleEditMode()
+					toast.success(res?.message)
+				},
+			})
+		} catch (err) {
+			console.log(err)
 		}
 	}
 
@@ -136,7 +179,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 
 								<DropdownMenuItem asChild>
 									<button
-										onClick={''}
+										onClick={handleDelete}
 										className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
 									>
 										<TrashIcon className='size-4' />

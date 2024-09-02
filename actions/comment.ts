@@ -23,3 +23,9 @@ export const updateComment = async (data: UpdateCommentInterface) => {
 
 	return res.data
 }
+
+export const deleteComment = async (id: number) => {
+	const res = await Axios.delete('/comment/' + id)
+
+	return res.data
+}
