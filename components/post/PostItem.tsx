@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import UserAvatar from '../avatar/UserAvatar'
 import {
 	EllipsisVerticalIcon,

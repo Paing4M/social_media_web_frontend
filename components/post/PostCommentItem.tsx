@@ -10,7 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { EllipsisIcon, PencilIcon, TrashIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useSession } from 'next-auth/react'
@@ -19,6 +19,8 @@ import { CmtError } from './PostComment'
 import toast from 'react-hot-toast'
 import { useQueryClient } from '@tanstack/react-query'
 import InputError from '@/app/(auth)/InputError'
+import { useCustomEditor } from '../UseCustomEditor'
+import { EditorContent } from '@tiptap/react'
 
 interface PostCommentProps {
 	comment: CommentType
@@ -27,7 +29,7 @@ interface PostCommentProps {
 
 const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 	const [editMode, setEditMode] = useState(false)
-	const [input, setInput] = useState(comment?.comment!)
+	// const [input, setInput] = useState(comment?.comment!)
 	const [error, setError] = useState<CmtError | null>(null)
 
 	const { data } = useSession()
@@ -35,6 +37,8 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 	const { mutateAsync: updateCmtAsync, isPending } = useUpdateComment()
 	const { mutateAsync: deleteCmtAsync } = useDeleteComment()
 	const queryClient = useQueryClient()
+	const editor = useCustomEditor({ content: comment?.comment! })
+	let input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	function handleEdit() {
 		setEditMode(true)
@@ -44,6 +48,12 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 		setEditMode(false)
 		setError(null)
 	}
+
+	useEffect(() => {
+		if (editor && editMode) {
+			editor.commands.setContent(comment?.comment)
+		}
+	}, [editMode, editor, comment?.comment])
 
 	async function handleCmtUpdate(e: React.FormEvent) {
 		e.preventDefault()
@@ -195,9 +205,9 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 				{editMode ? (
 					<form onSubmit={handleCmtUpdate}>
 						<div>
-							<Input
-								onChange={(e) => setInput(e.target.value)}
-								value={input}
+							<EditorContent
+								editor={editor}
+								className='w-full max-h-[10rem]  overflow-y-auto bg-background px-4 py-2 rounded-lg '
 							/>
 
 							{error?.comment && (
@@ -208,7 +218,6 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 								<Button
 									onClick={() => {
 										cancleEditMode()
-										setInput(comment?.comment!)
 									}}
 									variant={'outline'}
 								>
