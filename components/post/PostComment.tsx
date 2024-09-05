@@ -2,7 +2,6 @@
 
 import { useSession } from 'next-auth/react'
 import UserAvatar from '../avatar/UserAvatar'
-import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { AccordionTrigger } from '@radix-ui/react-accordion'
 import PostCommentItem from './PostCommentItem'
@@ -11,7 +10,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
-import { EditorContent, useEditor } from '@tiptap/react'
+import { EditorContent } from '@tiptap/react'
 import { useCustomEditor } from '../UseCustomEditor'
 
 type PostCommentProps = {
@@ -78,7 +77,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 			})
 		} catch (err: any) {
 			// console.log(err)
-			if (err?.response.status === 422) {
+			if (err?.response?.status === 422) {
 				setError(err?.response?.data?.errors)
 			}
 		}

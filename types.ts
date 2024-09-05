@@ -36,6 +36,8 @@ type CommentType = {
 	id: number
 	user: CmtUserType
 	comment: string
+	reaction_count: number
+	reacted_by_user: boolean
 	created_at: string
 }
 

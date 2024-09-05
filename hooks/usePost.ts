@@ -1,5 +1,5 @@
 import { addPost, deletePost, getPosts, updatePost } from '@/actions/post'
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
 
 const useGetPosts = () => {
 	return useInfiniteQuery({

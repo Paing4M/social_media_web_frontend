@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 
 const useCreateReaction = () => {
 	return useMutation({
-		mutationKey: ['createReaction'],
+		mutationKey: ['createPostReaction'],
 		mutationFn: createPostReaction,
 	})
 }
