@@ -22,7 +22,7 @@ const PostList = () => {
 
 	const { useGetPosts, useDeleteMutation } = usePost()
 	const { useCreateReaction } = usePostReaction()
-	const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useGetPosts()
 
 	const { mutateAsync } = useDeleteMutation()
@@ -128,7 +128,7 @@ const PostList = () => {
 		}
 	}
 
-	if (isFetching && !isFetchingNextPage) return <Loading />
+	if (isLoading && !isFetchingNextPage) return <Loading />
 
 	return (
 		<>

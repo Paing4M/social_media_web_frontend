@@ -22,17 +22,23 @@ import React, {
 	useEffect,
 	useState,
 } from 'react'
-import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useSession } from 'next-auth/react'
 import { useComment } from '@/hooks/useComment'
 import { CmtError } from './PostComment'
 import toast from 'react-hot-toast'
-import { useQueryClient } from '@tanstack/react-query'
 import InputError from '@/app/(auth)/InputError'
 import { useCustomEditor } from '../UseCustomEditor'
 import { EditorContent } from '@tiptap/react'
 import { useCommentReaction } from '@/hooks/useCommentReaction'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@radix-ui/react-accordion'
+import SubCommentForm from './SubCommentForm'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface PostCommentProps {
 	comment: CommentType
@@ -46,18 +52,27 @@ const CmtReactionBtn = ({ children, ...props }: CmtReactionBtn) => (
 	<button
 		{...props}
 		className={
-			'text-sm gap-1 px-2 rounded flex items-center ' + props.className
+			'text-sm gap-1 px-2 rounded flex items-center text-sx ' +
+			props.className
 		}
 	>
 		{children}
 	</button>
 )
 
-const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
+const PostCommentItem = ({
+	comment: postComment,
+	postId,
+}: PostCommentProps) => {
 	const [editMode, setEditMode] = useState(false)
 	const [error, setError] = useState<CmtError | null>(null)
+	const [comment, setComment] = useState<CommentType | null>(postComment)
 
 	const { data } = useSession()
+
+	const { useCreateComment } = useComment()
+	const { mutateAsync: createCommentAsync, isPending: creatingCmtPending } =
+		useCreateComment()
 
 	const { useCreateReaction } = useCommentReaction()
 	const { mutateAsync: createCmtReactionAsync } = useCreateReaction()
@@ -66,10 +81,12 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 	const { mutateAsync: updateCmtAsync, isPending } = useUpdateComment()
 
 	const { mutateAsync: deleteCmtAsync } = useDeleteComment()
-	const queryClient = useQueryClient()
 
 	const editor = useCustomEditor({ content: comment?.comment! })
 	let input = editor?.getText({ blockSeparator: '\n' }) || ''
+
+	const replyEditor = useCustomEditor({ placeholder: 'Reply a comment...' })
+	let replyInput = replyEditor?.getText({ blockSeparator: '\n' }) || ''
 
 	function handleEdit() {
 		setEditMode(true)
@@ -82,7 +99,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 
 	useEffect(() => {
 		if (editor && editMode) {
-			editor.commands.setContent(comment?.comment)
+			editor.commands.setContent(comment?.comment!)
 		}
 	}, [editMode, editor, comment?.comment])
 
@@ -91,43 +108,16 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 
 		try {
 			let data = {
-				id: comment?.id,
+				id: comment?.id!,
 				comment: input,
 			}
-			await updateCmtAsync(data, {
+			await updateCmtAsync(data!, {
 				onSuccess: (res) => {
 					// console.log(res)
 
 					// update the post comment
-					queryClient.setQueryData(
-						['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]> | undefined) => {
-							if (!oldData) return
-
-							// update the post comment
-							const newData = {
-								...oldData,
-								pages: oldData.pages.map((page) => ({
-									...page,
-									data: page.data.map((post) =>
-										post.id === postId
-											? {
-													...post,
-													comments: post.comments?.map((cmt) =>
-														cmt.id === res.comment?.id
-															? res.comment
-															: cmt
-													),
-											  }
-											: post
-									),
-								})),
-							}
-
-							return newData
-						}
-					)
-
+					setComment(res.comment)
+					editor?.commands?.clearContent()
 					cancleEditMode()
 					toast.success(res?.message)
 				},
@@ -142,40 +132,14 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 
 	async function handleDelete() {
 		try {
-			await deleteCmtAsync(comment.id, {
+			await deleteCmtAsync(comment?.id!, {
 				onSuccess: (res) => {
 					// console.log(res)
 
 					// delete the post comment
-					queryClient.setQueryData(
-						['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]> | undefined) => {
-							if (!oldData) return
+					setComment(null)
 
-							// update the post comment
-							const newData = {
-								...oldData,
-								pages: oldData.pages.map((page) => ({
-									...page,
-									data: page.data.map((post) =>
-										post.id === postId
-											? {
-													...post,
-													comments: post.comments?.filter(
-														(cmt) => cmt.id !== res.comment?.id
-													),
-													comment_count: post.comment_count - 1,
-											  }
-											: post
-									),
-								})),
-							}
-
-							return newData
-						}
-					)
-
-					cancleEditMode()
+					// cancleEditMode()
 					toast.success(res?.message)
 				},
 			})
@@ -187,38 +151,13 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 	async function handleLike() {
 		try {
 			let data = {
-				id: comment.id,
+				id: comment?.id!,
 				reaction: 'like',
 			}
 
-			await createCmtReactionAsync(data, {
+			await createCmtReactionAsync(data!, {
 				onSuccess: (res) => {
-					// console.log(res)
-					queryClient.setQueryData(
-						['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]> | undefined) => {
-							if (!oldData) return
-
-							return {
-								...oldData,
-								pages: oldData.pages.map((page) => ({
-									...page,
-									data: page.data.map((post) =>
-										post.id === postId
-											? {
-													...post,
-													comments: post.comments.map((cmt) =>
-														cmt.id == res.comment.id
-															? res.comment
-															: cmt
-													),
-											  }
-											: post
-									),
-								})),
-							}
-						}
-					)
+					setComment(res.comment)
 				},
 			})
 		} catch (err) {
@@ -226,7 +165,43 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 		}
 	}
 
-	console.log(comment?.reacted_by_user)
+	let queryClient = useQueryClient()
+
+	async function replyComment() {
+		try {
+			const data = {
+				post_id: postId,
+				comment: replyInput,
+				parent_id: comment?.id!,
+			}
+			await createCommentAsync(data!, {
+				onSuccess: (res) => {
+					// console.log('reply', res)
+					setComment((prev) => {
+						if (prev === null) {
+							return null
+						}
+						return {
+							...prev,
+							comments: [res.comment, ...(prev.comments || [])],
+						}
+					})
+					queryClient.invalidateQueries({
+						queryKey: ['get', 'getPosts'],
+					})
+					replyEditor?.commands.clearContent()
+					setError(null)
+				},
+			})
+		} catch (err: any) {
+			// console.log(err)
+			if (err?.response?.status === 422) {
+				setError(err?.response?.data?.errors)
+			}
+		}
+	}
+
+	if (!comment) return
 
 	return (
 		<div className='flex gap-2 items-start mb-3 last-of-type:mb-0'>
@@ -246,7 +221,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 							</span>
 						</div>
 
-						{data?.user.id == comment.user.id && (
+						{data?.user.id == comment?.user.id && (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<button className='border-none outline-none'>
@@ -284,7 +259,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 							<div>
 								<EditorContent
 									editor={editor}
-									className='w-full max-h-[10rem]  overflow-y-auto bg-background px-4 py-2 rounded-lg '
+									className='w-full max-h-[10rem]  overflow-y-auto bg-background px-2 py-1 text-sm rounded-lg '
 								/>
 
 								{error?.comment && (
@@ -293,6 +268,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 
 								<div className='flex gap-3 justify-end mt-2'>
 									<Button
+										size='sm'
 										onClick={() => {
 											cancleEditMode()
 										}}
@@ -302,6 +278,7 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 									</Button>
 
 									<Button
+										size='sm'
 										disabled={!input || isPending}
 										type='submit'
 										className='bg-muted-foreground text-white hover:bg-muted-foreground/80 '
@@ -316,29 +293,59 @@ const PostCommentItem = ({ comment, postId }: PostCommentProps) => {
 					)}
 				</div>
 
-				{/* comment reaction */}
-				<div className='flex items-center'>
-					<CmtReactionBtn
-						className={`${
-							comment?.reacted_by_user
-								? 'text-indigo-400 dark:text-indigo-300'
-								: ''
-						}`}
-						onClick={handleLike}
-					>
-						<ThumbsUpIcon className='size-3' />
-						{comment?.reaction_count > 0 && (
-							<span>({comment?.reaction_count})</span>
-						)}
+				<Accordion type='single' collapsible>
+					<AccordionItem value='subCommment'>
+						{/* comment reaction */}
+						<div className='flex items-center'>
+							<CmtReactionBtn
+								className={`${
+									comment?.reacted_by_user
+										? 'bg-indigo-300 dark:bg-indigo-400'
+										: ''
+								}`}
+								onClick={handleLike}
+							>
+								<ThumbsUpIcon className='size-3' />
+								{comment?.reaction_count > 0 && (
+									<span>({comment?.reaction_count})</span>
+								)}
 
-						{comment?.reacted_by_user ? 'liked' : 'like'}
-					</CmtReactionBtn>
+								{comment?.reacted_by_user ? 'liked' : 'like'}
+							</CmtReactionBtn>
 
-					<CmtReactionBtn>
-						<ReplyIcon className='size-4' />
-						<span className='text-sm'>reply</span>
-					</CmtReactionBtn>
-				</div>
+							<AccordionTrigger asChild>
+								<CmtReactionBtn>
+									<ReplyIcon className='size-4' />
+									<span className='text-sm'>
+										{' '}
+										{comment.comments.length > 0 &&
+											`(${comment.comments.length})`}{' '}
+										reply
+									</span>
+								</CmtReactionBtn>
+							</AccordionTrigger>
+						</div>
+						<AccordionContent
+							className='data-[state=open]:animate-accordion-down 
+            data-[state=closed]:animate-accordion-up '
+						>
+							<SubCommentForm
+								editor={replyEditor!}
+								replyComment={replyComment}
+							/>
+							<div className='mt-1'>
+								{comment?.comments &&
+									comment?.comments.map((subCmt) => (
+										<PostCommentItem
+											key={subCmt.id}
+											comment={subCmt}
+											postId={postId}
+										/>
+									))}
+							</div>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
 			</div>
 		</div>
 	)

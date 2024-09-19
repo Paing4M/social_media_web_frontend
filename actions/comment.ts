@@ -4,6 +4,7 @@ import { dataTagSymbol } from '@tanstack/react-query'
 interface AddCommentInterface {
 	post_id?: number
 	comment: string
+	parent_id?:number
 }
 
 interface UpdateCommentInterface extends AddCommentInterface {
