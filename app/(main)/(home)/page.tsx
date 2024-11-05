@@ -12,7 +12,7 @@ interface SearchParamsInterace {
 	search?: string
 }
 
-export default async function Home({ search }: SearchParamsInterace) {
+export default async function Home() {
 	const session = await auth()
 
 	const queryClient = new QueryClient()

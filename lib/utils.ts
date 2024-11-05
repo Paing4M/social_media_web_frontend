@@ -38,7 +38,7 @@ export async function readFile(file: File) {
 	})
 }
 
-export function eventEmitter() {
-	const emitter = new EventEmitter()
-	return emitter
-}
+// export function eventEmitter() {
+// 	const emitter = new EventEmitter()
+// 	return emitter
+// }
