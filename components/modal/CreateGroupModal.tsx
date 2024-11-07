@@ -45,14 +45,9 @@ export const CreateGroupModal = ({open, closeModal}: CreateGroupModalInterface) 
               let group = res.group
               // console.log(group , oldData)
 
-              if(oldData){
-                return {
-                  ...oldData,
-                  data: [group , ...oldData.data]
-                }
-              }
-
               return oldData
+                ? { ...oldData, data: [group, ...(oldData.data || [])] }
+                : { data: [group] };
 
             })
             setData({
