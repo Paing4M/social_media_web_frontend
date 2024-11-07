@@ -5,6 +5,7 @@ import {CreateGroupInterface} from "@/actions/group";
 import InputError from "@/app/(auth)/InputError";
 import toast from "react-hot-toast";
 import Loading from "@/components/Loading";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface CreateGroupModalInterface {
   open: boolean
@@ -30,6 +31,8 @@ export const CreateGroupModal = ({open, closeModal}: CreateGroupModalInterface) 
     closeModal()
   }
 
+  const queryClient = useQueryClient()
+  
   const handleCreateGroup = async  () =>{
 
     try {
@@ -37,6 +40,21 @@ export const CreateGroupModal = ({open, closeModal}: CreateGroupModalInterface) 
         onSuccess:(res)=>{
           // console.log(res)
           if(res){
+            // add newly created group to UI
+            queryClient.setQueryData(['get' , 'groups'], (oldData:ApiResponse<GroupInterface[]>)=>{
+              let group = res.group
+              // console.log(group , oldData)
+
+              if(oldData){
+                return {
+                  ...oldData,
+                  data: [group , ...oldData.data]
+                }
+              }
+
+              return oldData
+
+            })
             setData({
               name:'',
               about:'',
@@ -46,6 +64,8 @@ export const CreateGroupModal = ({open, closeModal}: CreateGroupModalInterface) 
             closeModal()
             toast.success(res?.message)
           }
+
+
         }
       })
     } catch (err:any) {

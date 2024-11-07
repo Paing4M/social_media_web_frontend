@@ -4,14 +4,18 @@ import {Input} from '../ui/input'
 import GroupItem from './GroupItem'
 import { useState} from "react";
 import {CreateGroupModal} from "@/components/modal/CreateGroupModal";
+import {useGroup} from "@/hooks/useGroup";
+import Loading from "@/components/Loading";
 
 const Group = () => {
   const [open, setOpen] = useState(false);
-
+  const {useGetGroups} = useGroup()
+  const {data, isPending} = useGetGroups()
 
   const closeModal = () => {
     setOpen(false)
   }
+
 
   return (
     <div
@@ -32,13 +36,12 @@ const Group = () => {
       </div>
 
       <div className='mt-4 flex flex-col gap-y-2 overflow-y-auto'>
-        <GroupItem/>
-        <GroupItem/>
-        <GroupItem/>
-        <GroupItem/>
-        <GroupItem/>
+        {isPending?<Loading/> :
+            data.data.map((group:GroupInterface) => (
+              <GroupItem key={group.id} group={group}/>
+            ))
+        }
       </div>
-
 
     {/* group modal */}
       <CreateGroupModal open={open} closeModal={closeModal}/>

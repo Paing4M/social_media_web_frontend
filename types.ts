@@ -78,3 +78,17 @@ interface QueryDataInterface<T> {
 	pageParams: [string] | null
 	pages: [ApiResponse<T>]
 }
+
+
+interface GroupInterface {
+	about?: string;
+	auto_approval: boolean;
+	cover_url?: string;
+	created_at: string;
+	current_user_role: string;
+	id: number;
+	name: string;
+	slug: string;
+	thumbnail_url?: string;
+	user_id: number;
+}

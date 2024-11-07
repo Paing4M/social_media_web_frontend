@@ -128,7 +128,7 @@ const PostList = () => {
 		}
 	}
 
-	if (isLoading && !isFetchingNextPage) return <Loading />
+	if (isLoading && !isFetchingNextPage) return <Loading className={'mt-2'}/>
 
 	return (
 		<>

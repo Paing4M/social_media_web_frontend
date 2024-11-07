@@ -1,5 +1,13 @@
-import {useMutation} from "@tanstack/react-query";
-import {createGroup} from "@/actions/group";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {createGroup, getGroups} from "@/actions/group";
+
+
+const useGetGroups = ()=>{
+  return useQuery({
+    queryKey:['get' , 'groups'],
+    queryFn:getGroups
+  })
+}
 
 const useCreateGroup = () =>{
   return useMutation({
@@ -13,5 +21,6 @@ const useCreateGroup = () =>{
 export  const useGroup = ()=>{
   return {
     useCreateGroup,
+    useGetGroups,
   }
 }

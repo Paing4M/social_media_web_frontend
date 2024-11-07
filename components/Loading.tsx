@@ -1,6 +1,6 @@
-const Loading = () => {
+const Loading = ({className}:{className?:string}) => {
 	return (
-		<div className='grid w-full place-items-center overflow-x-scroll rounded-lg px-2 lg:overflow-visible'>
+		<div className={`grid w-full place-items-center overflow-x-scroll rounded-lg px-2 lg:overflow-visible ${className}`}>
 			<svg
 				className='text-gray-300 animate-spin'
 				viewBox='0 0 64 64'
