@@ -103,7 +103,7 @@ const PostComment = ({ post }: PostCommentProps) => {
 
 				<div className='flex gap-3 justify-end mt-2'>
 					<AccordionTrigger asChild>
-						<Button variant={'outline'}>Cancle</Button>
+						<Button variant={'outline'}>Cancel</Button>
 					</AccordionTrigger>
 					<Button
 						disabled={!input || isPending}

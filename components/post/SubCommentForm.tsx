@@ -32,7 +32,7 @@ const SubCommentForm = ({ replyComment, editor }: SubCommentFormProps) => {
 				<div className='flex gap-1 justify-end'>
 					<AccordionTrigger asChild>
 						<Button size='sm' variant={'outline'}>
-							Cancle
+							Cancel
 						</Button>
 					</AccordionTrigger>
 

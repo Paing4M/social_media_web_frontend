@@ -149,7 +149,7 @@ const ProfileContainer = ({ username, user }: ProfileContainerProps) => {
 									className='!bg-destructive !hover:bg-destructive/80 text-white'
 								>
 									<XIcon className='size-4' />
-									Cancle
+									Cancel
 								</Btn>
 							</div>
 						)}

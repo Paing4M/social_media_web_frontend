@@ -92,7 +92,7 @@ const PostCommentItem = ({
 		setEditMode(true)
 	}
 
-	function cancleEditMode() {
+	function cancelEditMode() {
 		setEditMode(false)
 		setError(null)
 	}
@@ -118,7 +118,7 @@ const PostCommentItem = ({
 					// update the post comment
 					setComment(res.comment)
 					editor?.commands?.clearContent()
-					cancleEditMode()
+					cancelEditMode()
 					toast.success(res?.message)
 				},
 			})
@@ -139,7 +139,7 @@ const PostCommentItem = ({
 					// delete the post comment
 					setComment(null)
 
-					// cancleEditMode()
+					// cancelEditMode()
 					toast.success(res?.message)
 				},
 			})
@@ -270,11 +270,11 @@ const PostCommentItem = ({
 									<Button
 										size='sm'
 										onClick={() => {
-											cancleEditMode()
+											cancelEditMode()
 										}}
 										variant={'outline'}
 									>
-										Cancle
+										Cancel
 									</Button>
 
 									<Button
