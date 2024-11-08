@@ -1,4 +1,5 @@
 import { useInView } from 'react-intersection-observer'
+import React from "react";
 
 interface InfiniteScrollContainer extends React.PropsWithChildren {
 	isOnBottom: () => void

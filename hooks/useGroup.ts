@@ -1,11 +1,16 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
 import {createGroup, getGroups} from "@/actions/group";
 
 
 const useGetGroups = ()=>{
-  return useQuery({
+
+  return useInfiniteQuery({
     queryKey:['get' , 'groups'],
-    queryFn:getGroups
+    queryFn:({pageParam}:{pageParam:string | null} )=>
+      getGroups(pageParam!),
+    initialPageParam:null ,
+    getNextPageParam:(lastPage)=>lastPage.meta?.next_cursor
+
   })
 }
 

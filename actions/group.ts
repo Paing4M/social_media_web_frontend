@@ -6,8 +6,8 @@ export interface CreateGroupInterface {
   auto_approval : boolean
 }
 
-export const getGroups = async() =>{
-  const res = await  Axios.get('/group')
+export const getGroups = async(cursor:string | null = null) =>{
+  const res = await  Axios.get('/group?cursor=' + cursor)
   return res.data
 }
 

@@ -41,13 +41,17 @@ export const CreateGroupModal = ({open, closeModal}: CreateGroupModalInterface) 
           // console.log(res)
           if(res){
             // add newly created group to UI
-            queryClient.setQueryData(['get' , 'groups'], (oldData:ApiResponse<GroupInterface[]>)=>{
-              let group = res.group
-              // console.log(group , oldData)
+            queryClient.setQueryData(['get' , 'groups'], (oldData:QueryDataInterface<GroupInterface[]>)=>{
 
-              return oldData
-                ? { ...oldData, data: [group, ...(oldData.data || [])] }
-                : { data: [group] };
+              return {
+                ...oldData,
+                pages: oldData.pages.flatMap((page: ApiResponse<GroupInterface[]>) => {
+                  return {
+                    ...page,
+                    data: [res?.group, ...page.data]
+                  }
+                })
+              }
 
             })
             setData({

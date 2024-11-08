@@ -2,20 +2,18 @@
 
 import UserAvatar from '../avatar/UserAvatar'
 import './style.css'
-import { Button } from '../ui/button'
-import { usePost } from '@/hooks/usePost'
-import React, { useEffect, useState } from 'react'
+import {Button} from '../ui/button'
+import {usePost} from '@/hooks/usePost'
+import React, {useEffect, useState} from 'react'
 import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import Loading from '../Loading'
-import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
-import { useQueryClient } from '@tanstack/react-query'
-import { readFile } from '@/lib/utils'
-import { v4 as uuidv4 } from 'uuid'
+import {EditorContent} from '@tiptap/react'
+import {useQueryClient} from '@tanstack/react-query'
+import {readFile} from '@/lib/utils'
+import {v4 as uuidv4} from 'uuid'
 import PostPreviewAttachments from './PostPreviewAttachments'
-import { useCustomEditor } from '../UseCustomEditor'
+import {useCustomEditor} from '../UseCustomEditor'
 
 interface PostTextEditorProps {
 	user: UserInterface
@@ -80,7 +78,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 					queryClient.setQueryData(
 						['get', 'getPosts'],
 						(oldData: QueryDataInterface<Post[]>) => {
-							const newData = {
+							return {
 								...oldData,
 								pages: oldData.pages.map((page) => {
 									return {
@@ -89,8 +87,6 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 									}
 								}),
 							}
-
-							return newData
 						}
 					)
 
