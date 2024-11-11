@@ -45,7 +45,7 @@ const ProfileTabs = ({
                 <AvatarImage
                   className='object-cover'
                   src={
-                      group.thumbnail_url || thumbnailUrl!
+                    thumbnailUrl! || group.thumbnail_url
                     }
                   alt='img'
                 />
@@ -92,18 +92,38 @@ const ProfileTabs = ({
               <h2 className='text-xl font-bold ml-28'>{group.name}</h2>
 
               {group?.current_user_role === 'admin' &&
+                (
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      onClick={onSubmit}
+                      className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+                    >
+                      {loading ? (
+                        <Loading />
+                      ) : (
+                        <PencilIcon className='size-4' />
+                      )}
+                      {loading ? 'Processing' : 'Save'}
+                    </Button>
+
+                    <Button
+                      onClick={'onSubmit'}
+                      className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+                    >
+                      Invite
+                    </Button>
+                  </div>
+                )
+              }
+
+              {!group?.is_current_user_in_group && (
                 <Button
-                  onClick={onSubmit}
+                  onClick={'onSubmit'}
                   className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
                 >
-                  {loading ? (
-                    <Loading />
-                  ) : (
-                    <PencilIcon className='size-4' />
-                  )}
-                  {loading ? 'Processing' : 'Save'}
+                  Join
                 </Button>
-              }
+              )}
             </div>
           </div>
 

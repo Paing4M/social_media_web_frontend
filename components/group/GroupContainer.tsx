@@ -64,6 +64,9 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
   }
 
   async function handleSubmit() {
+
+    if(!thumbnailFile && !coverFile) return
+
     try {
       const data = {
         cover: coverFile!,
@@ -75,7 +78,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
         data,
         {
           onSuccess: (res) => {
-            console.log('success', res)
+            // console.log('success', res)
             setGroup(res.group)
             clearThumbnail()
             clearCover()
@@ -84,7 +87,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
         }
       )
     } catch (err: any) {
-      console.log(err)
+      // console.log(err)
       if (err?.response?.status == 422) {
         setErrors(err?.response?.data?.errors)
       }
@@ -116,8 +119,8 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
           
           <Image
             src={
-              group.cover_url ||
               coverUrl ||
+              group.cover_url ||
               '/assets/default-cover.jpg'
             }
             priority={false}
