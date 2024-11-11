@@ -31,6 +31,7 @@ Axios.interceptors.request.use(
 
 		if (
 			config.url?.includes('change-profile-image') ||
+			config.url?.includes('group/profile') ||
 			config.url?.includes('post')
 		) {
 			headers = {

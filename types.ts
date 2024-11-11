@@ -91,4 +91,5 @@ interface GroupInterface {
 	slug: string;
 	thumbnail_url?: string;
 	user_id: number;
+	is_current_user_in_group:boolean
 }

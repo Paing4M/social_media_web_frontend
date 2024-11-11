@@ -1,9 +1,8 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
-import {createGroup, getGroups} from "@/actions/group";
+import {changeGroupProfile, createGroup, getGroups} from "@/actions/group";
 
 
 const useGetGroups = ()=>{
-
   return useInfiniteQuery({
     queryKey:['get' , 'groups'],
     queryFn:({pageParam}:{pageParam:string | null} )=>
@@ -21,11 +20,17 @@ const useCreateGroup = () =>{
   })
 }
 
-
+const useGroupProfile = () =>{
+  return  useMutation({
+    mutationKey:['profile'  , 'changeGroupProfile'],
+    mutationFn:changeGroupProfile
+  })
+}
 
 export  const useGroup = ()=>{
   return {
     useCreateGroup,
     useGetGroups,
+    useGroupProfile
   }
 }

@@ -7,6 +7,7 @@ import { Session } from 'next-auth'
 import ProfileUserInfo from './ProfileUserInfo'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import Loading from '../Loading'
+import React from "react";
 
 interface ProfileTabsProps {
 	data: Session
@@ -97,7 +98,7 @@ const ProfileTabs = ({
 						</div>
 
 						<div className='flex items-center p-3 justify-between gap-1'>
-							<h2 className='text-xl font-bold ml-28'>Hello</h2>
+							<h2 className='text-xl font-bold ml-28'>{user?.username}</h2>
 
 							{user?.username === data?.user?.username ? (
 								<Button
