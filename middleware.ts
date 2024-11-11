@@ -4,10 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 export default auth((req, res) => {
 	if (
 		(req.nextUrl.pathname === '/' ||
-			req.nextUrl.pathname.includes('profile')) &&
+			req.nextUrl.pathname.includes('profile') ||
+			req.nextUrl.pathname.includes('group')
+		) &&
 		!req.auth
 	) {
-		return NextResponse.redirect(new URL('/login', req.url))
+		const callbackURL = req.nextUrl.pathname
+		return NextResponse.redirect(new URL('/login?callbackURL=' + encodeURIComponent(callbackURL), req.url))
 	}
 	if (
 		(req.nextUrl.pathname === '/login' ||
@@ -19,5 +22,5 @@ export default auth((req, res) => {
 })
 
 export const config = {
-	matcher: ['/', '/login', '/signup', '/profile/:path*'],
+	matcher: ['/', '/login', '/signup', '/profile/:path*' , '/group/:path*'],
 }

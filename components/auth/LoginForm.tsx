@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
+import {useSearchParams} from "next/navigation";
 
 interface ErrorInterface {
 	email: string
@@ -15,6 +16,9 @@ interface ErrorInterface {
 const LoginForm = () => {
 	const [data, setData] = useState<SignInData | null>(null)
 	const [errors, setErrors] = useState<ErrorInterface | null>(null)
+	const searchParams = useSearchParams()
+	const callbackURL = searchParams.get('callbackURL')
+
 	const { useSignInMutation } = useAuth()
 	const { mutateAsync, isPending } = useSignInMutation()
 
@@ -39,7 +43,7 @@ const LoginForm = () => {
 						signIn('credentials', {
 							email: res.data.email,
 							password: data?.password,
-							callbackUrl: '/',
+							callbackUrl: callbackURL || '/',
 						})
 					}
 				},
