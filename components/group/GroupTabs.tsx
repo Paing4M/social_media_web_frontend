@@ -1,11 +1,16 @@
 'use cient'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs'
-import { Button } from '../ui/button'
-import { CameraIcon, PencilIcon, UserRoundPlusIcon, XIcon } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@radix-ui/react-tabs'
+import {Button} from '../ui/button'
+import {CameraIcon, PencilIcon, UserRoundPlusIcon, XIcon} from 'lucide-react'
+import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar'
 import Loading from '../Loading'
-import React from "react";
+import React, {useState} from "react";
+import GroupInviteModal from "@/components/modal/GroupInviteModal";
+import {useSearchParams} from "next/navigation";
+import {useSession} from "next-auth/react";
+import {useGroup} from "@/hooks/useGroup";
+import toast from "react-hot-toast";
 
 interface ProfileTabsProps {
   group: GroupInterface
@@ -22,8 +27,15 @@ interface ProfileTabsProps {
   clearThumbnail: () => void
 }
 
+interface Error {
+  token?:[string]
+  user_id?:[string]
+  group_id?:[string]
+  slug?:[string]
+}
+
 const ProfileTabs = ({
-                       group,
+                       group:initial,
                        thumbnailUrl,
                        handleUpload,
                        setThumbnailUrl,
@@ -32,6 +44,50 @@ const ProfileTabs = ({
                        loading,
                        clearThumbnail,
                      }: ProfileTabsProps) => {
+  const [group , setGroup] = useState<GroupInterface>(initial)
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<Error | null>(null)
+
+  const searchParams = useSearchParams()
+  const loginUser = useSession()
+
+  const {useJoinGroup} = useGroup()
+  const {mutateAsync:joinGroupMutateAsync , isPending}  = useJoinGroup()
+
+  const closeModal = () => {
+    setOpen(false)
+  }
+
+  const handleJoinGroup = async ()=>{
+    try {
+      const token = searchParams.get("token");
+      const data = {
+        token ,
+        user_id : loginUser.data?.user?.id,
+        group_id : group.id,
+        slug:group.slug
+      }
+
+      await joinGroupMutateAsync(data , {
+        onSuccess:(res)=> {
+        console.log(res)
+          setGroup(prev=>({
+            ...prev,
+            is_current_user_in_group:res.group.is_current_user_in_group,
+            current_user_role:res.group.current_user_role,
+          }))
+      }
+      })
+
+    } catch (e:any) {
+      console.log(e)
+      if(e.response.status === 404) {
+        toast.error(e.response.data.message)
+      }
+    }
+  }
+
+
   return (
     <>
       <Tabs
@@ -46,7 +102,7 @@ const ProfileTabs = ({
                   className='object-cover'
                   src={
                     thumbnailUrl! || group.thumbnail_url
-                    }
+                  }
                   alt='img'
                 />
                 <AvatarFallback className='text-4xl'>
@@ -61,7 +117,7 @@ const ProfileTabs = ({
                       htmlFor='avatar'
                       className='bg-background p-1 px-2 rounded-md absolute cursor-pointer flex items-center gap-2 text-sm top-1 -right-[40%] hover:bg-background/80'
                     >
-                      <CameraIcon className='size-4' />
+                      <CameraIcon className='size-4'/>
                       Thumbnail
                       <input
                         onChange={(e) =>
@@ -81,7 +137,7 @@ const ProfileTabs = ({
                       onClick={clearThumbnail}
                       className='bg-background p-2 absolute border cursor-pointer rounded-full top-1 -right-[10%]'
                     >
-                      <XIcon className='size-4 text-red-500' />
+                      <XIcon className='size-4 text-red-500'/>
                     </button>
                   )}
                 </>
@@ -99,15 +155,15 @@ const ProfileTabs = ({
                       className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
                     >
                       {loading ? (
-                        <Loading />
+                        <Loading/>
                       ) : (
-                        <PencilIcon className='size-4' />
+                        <PencilIcon className='size-4'/>
                       )}
-                      {loading ? 'Processing' : 'Save'}
+                      {loading ? 'Processing' : 'Update Profile'}
                     </Button>
 
                     <Button
-                      onClick={'onSubmit'}
+                      onClick={()=>setOpen(true)}
                       className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
                     >
                       Invite
@@ -116,14 +172,21 @@ const ProfileTabs = ({
                 )
               }
 
-              {!group?.is_current_user_in_group && (
+              {group?.current_user_role === 'user' && (!group?.is_current_user_in_group ? (
                 <Button
-                  onClick={'onSubmit'}
+                  onClick={handleJoinGroup}
                   className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
                 >
-                  Join
+                  {isPending ? <Loading/> : 'Join'}
                 </Button>
-              )}
+              ) : (
+                <Button
+                  onClick={'handleJoinGroup'}
+                  className='capitalize flex items-center gap-2 min-w-10 tracking-wide bg-red-400 hover:bg-red-500 text-white'
+                >
+                  {isPending ? <Loading/> : 'Leave'}
+                </Button>
+              ))}
             </div>
           </div>
 
@@ -161,6 +224,9 @@ const ProfileTabs = ({
             </TabsList>
           </div>
         </div>
+
+        {/* group invite modal */}
+        <GroupInviteModal open={open} closeModal={closeModal} slug={group.slug}/>
 
         <TabsContent value='posts'>posts</TabsContent>
         <TabsContent value='followers'>followers</TabsContent>

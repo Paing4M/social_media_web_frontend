@@ -12,6 +12,18 @@ export interface GroupProfile {
   slug: string
 }
 
+interface InviteGroupInterface {
+  slug:string
+  value?: string
+}
+
+interface JoinGroupInterface {
+  token?: string | null
+  user_id?: number | null
+  group_id?: number | null
+  slug?: string | null
+}
+
 export const getGroups = async (cursor: string | null = null) => {
   const res = await Axios.get('/group?cursor=' + cursor)
   return res.data
@@ -24,13 +36,20 @@ export const createGroup = async (data: CreateGroupInterface) => {
 
 
 export const changeGroupProfile = async (data: GroupProfile) => {
-  console.log(data)
-
-
   const res = await Axios.post('/group/profile/' + data.slug, data , {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   })
+  return res.data
+}
+
+export const inviteToGroup = async (data:InviteGroupInterface) =>{
+  const res = await Axios.post('/group/invite/' + data.slug, {value:data.value})
+  return res.data
+}
+
+export const joinGroup =  async (data:JoinGroupInterface) =>{
+  const res = await Axios.post('/group/join/' + data.slug, data)
   return res.data
 }
