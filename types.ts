@@ -1,16 +1,21 @@
-interface UserInterface {
-	id?: number
-	name?: string
-	email?: string
-	username?: string
-	avatar_path?: string | null
-	cover_path?: string | null
+interface UserInterface extends  BaseUserInterface{
+	token?: string | null
+}
+
+interface BaseUserInterface {
+	id:number
+	name:string
+	email:string
+	username:string
+	avatar_path?:string | null
+	cover_path?:string | null
+	created_at:string
 	avatar_url?: string | null
 	cover_url?: string | null
-	email_verified_at?: string | null
-	token?: string | null
-	created_at?: string
-	updated_at?: string
+}
+
+interface GpUserInterface extends BaseUserInterface {
+	userRoleInGroup?:string
 }
 
 type ApiResponse<T> = {
@@ -23,7 +28,7 @@ type Post = {
 	id: number
 	body: string
 	group: any | null
-	user: UserInterface
+	user: BaseUserInterface
 	attachments?: PostAttachmentInterface[] | null
 	reaction_count: number
 	reacted_by_user: boolean
@@ -92,4 +97,21 @@ interface GroupInterface {
 	thumbnail_url?: string;
 	user_id: number;
 	is_current_user_in_group:boolean
+	// groupUsers:GpUserInterface[]
+	// requestGroupUsers:GpUserInterface[]
+}
+
+interface GroupUserInterface {
+	id:number
+	username:string
+	avatar_url:string
+	role:string
+	status:string
+	group_id:number
+}
+
+interface GroupProfileInterface {
+	group : GroupInterface
+	gpUsers:GroupUserInterface[]
+	gpRequestUsers:BaseUserInterface[]
 }

@@ -11,9 +11,11 @@ import {useSearchParams} from "next/navigation";
 import {useSession} from "next-auth/react";
 import {useGroup} from "@/hooks/useGroup";
 import toast from "react-hot-toast";
+import GroupUserList from "@/components/group/GroupUserList";
+import GroupRequestList from "@/components/group/GroupRequestList";
 
 interface ProfileTabsProps {
-  group: GroupInterface
+  group: GroupProfileInterface
   handleUpload: (
     e: React.ChangeEvent<HTMLInputElement>,
     setUrl: (url: string) => void,
@@ -44,7 +46,9 @@ const ProfileTabs = ({
                        loading,
                        clearThumbnail,
                      }: ProfileTabsProps) => {
-  const [group , setGroup] = useState<GroupInterface>(initial)
+  const [group , setGroup] = useState<GroupInterface>(initial.group)
+  const [gpUsers , setGpUsers] = useState<GroupUserInterface[] | null>(initial.gpUsers || null)
+  const [gpRequestUsers , setGpRequestUsers] = useState<BaseUserInterface[] | null>(initial.gpRequestUsers || null)
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<Error | null>(null)
 
@@ -58,6 +62,8 @@ const ProfileTabs = ({
     setOpen(false)
   }
 
+
+
   const handleJoinGroup = async ()=>{
     try {
       const token = searchParams.get("token");
@@ -70,7 +76,8 @@ const ProfileTabs = ({
 
       await joinGroupMutateAsync(data , {
         onSuccess:(res)=> {
-        console.log(res)
+        // console.log(res)
+          toast.success(res.message)
           setGroup(prev=>({
             ...prev,
             is_current_user_in_group:res.group.is_current_user_in_group,
@@ -172,7 +179,7 @@ const ProfileTabs = ({
                 )
               }
 
-              {group?.current_user_role === 'user' && (!group?.is_current_user_in_group ? (
+              {!group.is_current_user_in_group ? (
                 <Button
                   onClick={handleJoinGroup}
                   className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
@@ -181,19 +188,17 @@ const ProfileTabs = ({
                 </Button>
               ) : (
                 <Button
-                  onClick={'handleJoinGroup'}
+                  onClick={()=>{}}
                   className='capitalize flex items-center gap-2 min-w-10 tracking-wide bg-red-400 hover:bg-red-500 text-white'
                 >
                   {isPending ? <Loading/> : 'Leave'}
                 </Button>
-              ))}
+              )}
             </div>
           </div>
 
           <div className='mt-2 pb-4'>
             <TabsList className='flex items-center flex-wrap gap-1 justify-center sm:justify-start'>
-
-
               <TabsTrigger
                 value='posts'
                 className='px-4 py-1 data-[state=active]:border-b-2  data-[state=active]:border-blue-400 data-[state=active]:text-blue-400'
@@ -201,19 +206,27 @@ const ProfileTabs = ({
                 Posts
               </TabsTrigger>
 
-              <TabsTrigger
-                value='followers'
-                className='px-4 py-1 data-[state=active]:border-b-2  data-[state=active]:border-blue-400 data-[state=active]:text-blue-400'
-              >
-                Followers
-              </TabsTrigger>
 
-              <TabsTrigger
-                value='followings'
-                className='px-4 py-1 data-[state=active]:border-b-2  data-[state=active]:border-blue-400 data-[state=active]:text-blue-400'
-              >
-                Followings
-              </TabsTrigger>
+              {group.current_user_role === 'admin' && (
+
+                <TabsTrigger
+                  value='users'
+                  className='px-4 py-1 data-[state=active]:border-b-2  data-[state=active]:border-blue-400 data-[state=active]:text-blue-400'
+                >
+                  Users
+                </TabsTrigger>
+              )}
+
+
+              {group.current_user_role === 'admin' && (
+
+                <TabsTrigger
+                  value='requests'
+                  className='px-4 py-1 data-[state=active]:border-b-2  data-[state=active]:border-blue-400 data-[state=active]:text-blue-400'
+                >
+                  Requests
+                </TabsTrigger>
+              )}
 
               <TabsTrigger
                 value='photos'
@@ -229,8 +242,18 @@ const ProfileTabs = ({
         <GroupInviteModal open={open} closeModal={closeModal} slug={group.slug}/>
 
         <TabsContent value='posts'>posts</TabsContent>
-        <TabsContent value='followers'>followers</TabsContent>
-        <TabsContent value='followings'>followings</TabsContent>
+        {group.current_user_role === 'admin' && (
+          <TabsContent value='users'>
+            <GroupUserList group_id={group.id} users={gpUsers!} />
+          </TabsContent>
+        )}
+
+        {group.current_user_role === 'admin' && (
+          <TabsContent value='requests'>
+            <GroupUserList group_id={group.id}  users={gpRequestUsers!}  />
+          </TabsContent>
+        )}
+
         <TabsContent value='photos'>photos</TabsContent>
       </Tabs>
     </>

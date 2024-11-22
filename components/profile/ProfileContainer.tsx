@@ -69,9 +69,9 @@ const ProfileContainer = ({ username, user }: ProfileContainerProps) => {
 			await mutateAsync(
 				{ cover: coverFile, avatar: avatarFile },
 				{
-					onSuccess: (res) => {
+					onSuccess: async (res) => {
 						// console.log('success', res)
-						update(res?.user)
+						await update(res?.user)
 						clearAvatar()
 						clearCover()
 						toast.success(res?.message)

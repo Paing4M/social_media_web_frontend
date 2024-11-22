@@ -24,7 +24,6 @@ const ProfilePage = async ({ params }: GroupProfileParams) => {
 	const session = await auth()
 	const group = await getGroup(params?.slug!, session?.user.token!)
 
-
 	return (
 		<>
 			<GroupContainer group={group!} />

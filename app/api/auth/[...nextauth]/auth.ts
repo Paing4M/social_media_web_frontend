@@ -35,6 +35,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 						credentials
 					)
 
+					// console.log(res?.data?.data)
+
 					if (res?.data?.data) {
 						return res?.data?.data
 					} else {

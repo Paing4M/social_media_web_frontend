@@ -8,9 +8,10 @@ import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import GroupTabs from "@/components/group/GroupTabs";
 import {useGroup} from "@/hooks/useGroup";
+import {GroupProfile} from "@/actions/group";
 
 interface GroupContainerProps {
-  group: GroupInterface
+  group: GroupProfileInterface
 }
 
 interface Error {
@@ -38,12 +39,12 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
   const [coverUrl, setCoverUrl] = useState<string | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
-  const [group , setGroup] = useState<GroupInterface>(initial)
+  const [group , setGroup] = useState<GroupProfileInterface>(initial)
+
 
   const {useGroupProfile} = useGroup()
   const {mutateAsync, isPending} = useGroupProfile()
   const [errors, setErrors] = useState<Error | null>(null)
-
 
   const handleUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -71,7 +72,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
       const data = {
         cover: coverFile!,
         thumbnail: thumbnailFile!,
-        slug: group.slug
+        slug: group?.group?.slug
       }
 
       await mutateAsync(
@@ -79,7 +80,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
         {
           onSuccess: (res) => {
             // console.log('success', res)
-            setGroup(res.group)
+            setGroup(prev=>({...prev , group:res.group}))
             clearThumbnail()
             clearCover()
             toast.success(res?.message)
@@ -120,7 +121,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
           <Image
             src={
               coverUrl ||
-              group.cover_url ||
+              group?.group?.cover_url ||
               '/assets/default-cover.jpg'
             }
             priority={false}
@@ -131,7 +132,7 @@ const GroupContainer = ({group:initial}: GroupContainerProps) => {
           />
         </div>
 
-        {group.current_user_role === 'admin' && (
+        {group?.group?.current_user_role === 'admin' && (
           <>
             {!coverUrl && (
               <label
