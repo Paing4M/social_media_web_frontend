@@ -85,7 +85,7 @@ const ProfileTabs = ({
             current_user_role:res.group.current_user_role,
           }))
         if(token) {
-          router.push(`/group/${group.slug}` )
+          router.push(`/group/${group.slug}` , {shallow: true})
         }
       }
       })

@@ -53,3 +53,12 @@ export const joinGroup =  async (data:JoinGroupInterface) =>{
   const res = await Axios.post('/group/join/' + data.slug, data)
   return res.data
 }
+
+export const groupRequestAction = async  (data:{
+  action: string,
+  user_id: number,
+  group_slug:string
+}) =>{
+  const res = await Axios.post('/group/request-action/' + data. group_slug, data)
+  return res.data
+}

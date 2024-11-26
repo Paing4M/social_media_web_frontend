@@ -1,5 +1,12 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
-import {changeGroupProfile, createGroup, getGroups, inviteToGroup, joinGroup} from "@/actions/group";
+import {
+  changeGroupProfile,
+  createGroup,
+  getGroups,
+  groupRequestAction,
+  inviteToGroup,
+  joinGroup
+} from "@/actions/group";
 
 
 const useGetGroups = ()=>{
@@ -41,12 +48,20 @@ const useJoinGroup = () =>{
   })
 }
 
+const useGpAction = ()=>{
+  return useMutation({
+    mutationKey:['post' , 'gpAction'],
+    mutationFn:groupRequestAction
+  })
+}
+
 export  const useGroup = ()=>{
   return {
     useCreateGroup,
     useGetGroups,
     useGroupProfile,
     useInviteToGroup,
-    useJoinGroup
+    useJoinGroup,
+    useGpAction
   }
 }

@@ -4,15 +4,16 @@ import React, {useState} from 'react'
 import GroupUser from "@/components/group/GroupUser";
 import {useGroup} from "@/hooks/useGroup";
 import toast from "react-hot-toast";
+import GroupRequest from "@/components/group/GroupRequest";
 import Search from "@/components/group/Search";
 
-interface GroupUserListProps {
-  users: GroupUserInterface[] | null
+interface GroupRequestListProps {
+  users: BaseUserInterface[] | null
   group_slug: string
 }
 
-const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
-  const [users, setUsers] = useState<GroupUserInterface[] | null>(initial);
+const GroupRequestList = ({users: initial, group_slug}: GroupRequestListProps) => {
+  const [users, setUsers] = useState< BaseUserInterface[] | null>(initial);
   const [input, setInput] = useState('');
 
   const {useGpAction} = useGroup()
@@ -20,7 +21,7 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
 
 
   if (users?.length == 0) {
-    return (<p className={'w-full text-center text-sm'}>Invite user to group.</p>)
+    return (<p className={'w-full text-center text-sm'}>No request found.</p>)
   }
 
   const handleSearchUser = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +40,7 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
       await mutateAsync(data, {
         onSuccess: (res) => {
           setUsers((prev) => {
-            if (prev) {
-              return prev.filter(user => user.id !== res.user.id) as any
-            }
-            return prev
+              return prev?.filter(user => user.id !== res.user.id)  ?? []
           });
           toast.success(res.message);
         }
@@ -59,7 +57,7 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
       <Search handleSearchUser={handleSearchUser}/>
       <div className='grid grid-col-1 md:grid-cols-2 gap-2'>
         {users?.filter(user => user?.username!.includes(input.toLowerCase()))?.map(user => (
-          <GroupUser key={user.id + ' ' + user.username} user={user} handleAction={handleAction}/>
+          <GroupRequest user={user} handleAction={handleAction} />
         ))}
       </div>
     </div>
@@ -67,4 +65,4 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
 
 
 }
-export default GroupUserList
+export default GroupRequestList
