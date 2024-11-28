@@ -1,7 +1,7 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
 import {
   changeGroupProfile,
-  createGroup, getGroup,
+  createGroup, getGpPosts, getGroup,
   getGroups,
   groupRequestAction,
   inviteToGroup,
@@ -57,8 +57,19 @@ const useGpAction = () => {
 
 const useGetGroupWithSlug = (slug: string) => {
   return useQuery({
-    queryKey: ['getGpBySlug' , slug],
-    queryFn:()=>getGroup(slug)
+    queryKey: ['getGpBySlug', slug],
+    queryFn: () => getGroup(slug)
+  })
+}
+
+const useGetGpPosts = (id: number) => {
+  return useInfiniteQuery({
+    queryKey: ['get', 'getGpPosts', id],
+    queryFn: ({pageParam}: { pageParam: string | null }) =>
+      getGpPosts(id, pageParam!)
+    ,
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => lastPage.meta?.next_cursor
   })
 }
 
@@ -71,6 +82,7 @@ export const useGroup = () => {
     useInviteToGroup,
     useJoinGroup,
     useGpAction,
-    useGetGroupWithSlug
+    useGetGroupWithSlug,
+    useGetGpPosts
   }
 }

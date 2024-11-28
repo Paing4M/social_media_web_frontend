@@ -20,7 +20,7 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
 
 
   if (users?.length == 0) {
-    return (<p className={'w-full text-center text-sm'}>Invite user to group.</p>)
+    return (<p className={'w-full text-center text-sm mt-5'}>Invite user to group.</p>)
   }
 
   const handleSearchUser = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,7 @@ const GroupUserList = ({users: initial, group_slug}: GroupUserListProps) => {
   }
 
   return (
-    <div>
+    <div className='mt-5'>
       <Search handleSearchUser={handleSearchUser}/>
       <div className='grid grid-col-1 md:grid-cols-2 gap-2'>
         {users?.filter(user => user?.username!.includes(input.toLowerCase()))?.map(user => (

@@ -68,7 +68,7 @@ export const getGroup = async (slug: string) => {
   return res.data
 }
 
-export const getGpPosts = async (id :number , cursor: string | null = null) =>{
+export const getGpPosts = async (id :string , cursor: string | null = null) =>{
   const res = await Axios.get(`/group/${id}/post?cursor=${cursor}`)
   return res.data
 }

@@ -13,6 +13,7 @@ import {useGroup} from "@/hooks/useGroup";
 import toast from "react-hot-toast";
 import GroupUserList from "@/components/group/GroupUserList";
 import GroupRequestList from "@/components/group/GroupRequestList";
+import GroupPosts from "@/components/group/GroupPosts";
 
 
 interface ProfileTabsProps {
@@ -108,7 +109,7 @@ const ProfileTabs = ({
       <Tabs
         defaultValue={activeTab}
         onValueChange={(value)=>setActiveTab(value)}
-        className='flex flex-col gap-y-5'
+        className='flex flex-col'
       >
         <div className='bg-background shadow-sm rounded-b-lg relative  px-6'>
           <div className='border-b'>
@@ -252,7 +253,10 @@ const ProfileTabs = ({
 
 
         {/* tabs content */}
-        <TabsContent value='posts'>posts</TabsContent>
+        <TabsContent value='posts'>
+          <GroupPosts id={group.id!}/>
+
+        </TabsContent>
         {group.current_user_role === 'admin' && (
           <TabsContent value='users'>
             <GroupUserList group_slug={group.slug} users={data.gpUsers!} />

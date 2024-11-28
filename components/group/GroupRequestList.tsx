@@ -20,7 +20,7 @@ const GroupRequestList = ({users, group_slug}: GroupRequestListProps) => {
   const queryClient = useQueryClient()
 
   if (users?.length == 0) {
-    return (<p className={'w-full text-center text-sm'}>No request found.</p>)
+    return (<p className={'w-full text-center text-sm mt-5'}>No request found.</p>)
   }
 
   const handleSearchUser = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,7 @@ const GroupRequestList = ({users, group_slug}: GroupRequestListProps) => {
   }
 
   return (
-    <div>
+    <div className='mt-5'>
       <Search handleSearchUser={handleSearchUser}/>
       <div className='grid grid-col-1 md:grid-cols-2 gap-2'>
         {users?.filter(user => user?.username!.includes(input.toLowerCase()))?.map(user => (

@@ -57,8 +57,7 @@ const PostList = ({groupId = null} : PostListProps) => {
 
 					// delete the post
 					queryClient.setQueryData(
-						groupId ?
-							['get' , 'getGpPosts' , groupId]:['get', 'getPosts'],
+						['get', 'getPosts'],
 						(oldData: QueryDataInterface<Post[]>) => {
 							if (!oldData) return
 							const newData = {
