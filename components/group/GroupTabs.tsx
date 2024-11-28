@@ -5,7 +5,7 @@ import {Button} from '../ui/button'
 import {CameraIcon, PencilIcon, UserRoundPlusIcon, XIcon} from 'lucide-react'
 import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar'
 import Loading from '../Loading'
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import GroupInviteModal from "@/components/modal/GroupInviteModal";
 import {useRouter, useSearchParams} from "next/navigation";
 import {useSession} from "next-auth/react";
@@ -16,7 +16,7 @@ import GroupRequestList from "@/components/group/GroupRequestList";
 
 
 interface ProfileTabsProps {
-  group: GroupProfileInterface
+  data: GroupProfileInterface
   handleUpload: (
     e: React.ChangeEvent<HTMLInputElement>,
     setUrl: (url: string) => void,
@@ -38,7 +38,7 @@ interface Error {
 }
 
 const ProfileTabs = ({
-                       group:initial,
+                       data,
                        thumbnailUrl,
                        handleUpload,
                        setThumbnailUrl,
@@ -47,8 +47,10 @@ const ProfileTabs = ({
                        loading,
                        clearThumbnail,
                      }: ProfileTabsProps) => {
-  const [group , setGroup] = useState<GroupInterface>(initial.group)
+  const [group , setGroup] = useState<GroupInterface>(data.group!)
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('posts');
+
   const [error, setError] = useState<Error | null>(null)
 
   const router = useRouter()
@@ -63,7 +65,9 @@ const ProfileTabs = ({
     setOpen(false)
   }
 
-
+  useEffect(() => {
+    setGroup(data.group)
+  }, [data]);
 
   const handleJoinGroup = async ()=>{
     try {
@@ -102,7 +106,8 @@ const ProfileTabs = ({
   return (
     <>
       <Tabs
-        defaultValue={'posts'}
+        defaultValue={activeTab}
+        onValueChange={(value)=>setActiveTab(value)}
         className='flex flex-col gap-y-5'
       >
         <div className='bg-background shadow-sm rounded-b-lg relative  px-6'>
@@ -245,16 +250,18 @@ const ProfileTabs = ({
         {/* group invite modal */}
         <GroupInviteModal open={open} closeModal={closeModal} slug={group.slug}/>
 
+
+        {/* tabs content */}
         <TabsContent value='posts'>posts</TabsContent>
         {group.current_user_role === 'admin' && (
           <TabsContent value='users'>
-            <GroupUserList group_slug={group.slug} users={initial.gpUsers!} />
+            <GroupUserList group_slug={group.slug} users={data.gpUsers!} />
           </TabsContent>
         )}
 
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
-            <GroupRequestList group_slug={group.slug}  users={initial.gpRequestUsers!}  />
+            <GroupRequestList group_slug={group.slug}  users={data.gpRequestUsers!}  />
           </TabsContent>
         )}
 

@@ -13,7 +13,7 @@ export interface GroupProfile {
 }
 
 interface InviteGroupInterface {
-  slug:string
+  slug: string
   value?: string
 }
 
@@ -36,7 +36,7 @@ export const createGroup = async (data: CreateGroupInterface) => {
 
 
 export const changeGroupProfile = async (data: GroupProfile) => {
-  const res = await Axios.post('/group/profile/' + data.slug, data , {
+  const res = await Axios.post('/group/profile/' + data.slug, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -44,21 +44,26 @@ export const changeGroupProfile = async (data: GroupProfile) => {
   return res.data
 }
 
-export const inviteToGroup = async (data:InviteGroupInterface) =>{
-  const res = await Axios.post('/group/invite/' + data.slug, {value:data.value})
+export const inviteToGroup = async (data: InviteGroupInterface) => {
+  const res = await Axios.post('/group/invite/' + data.slug, {value: data.value})
   return res.data
 }
 
-export const joinGroup =  async (data:JoinGroupInterface) =>{
+export const joinGroup = async (data: JoinGroupInterface) => {
   const res = await Axios.post('/group/join/' + data.slug, data)
   return res.data
 }
 
-export const groupRequestAction = async  (data:{
+export const groupRequestAction = async (data: {
   action: string,
   user_id: number,
-  group_slug:string
-}) =>{
-  const res = await Axios.post('/group/request-action/' + data. group_slug, data)
+  group_slug: string
+}) => {
+  const res = await Axios.post('/group/request-action/' + data.group_slug, data)
+  return res.data
+}
+
+export const getGroup = async (slug: string) => {
+  const res = await Axios.get('/group/' + slug)
   return res.data
 }

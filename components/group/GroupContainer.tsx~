@@ -85,7 +85,7 @@ const GroupContainer = ({slug}: GroupContainerProps) => {
         formData,
         {
           onSuccess: (res) => {
-            // console.log('success', res)
+            console.log('success', res)
             queryClient.setQueryData(['getGpBySlug' , slug] ,(oldData:GroupProfileInterface)=>{
               return {...oldData , group:res.group }
             } )

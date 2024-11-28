@@ -43,7 +43,7 @@ const GroupRequestList = ({users, group_slug}: GroupRequestListProps) => {
 
             const removedUser = oldData.gpRequestUsers.filter(user => user.id !== res.user.id)
 
-            let users = action === 'reject' ? [...oldData.gpUsers] : [...oldData.gpUsers, res.user].sort((a, b) => a.username.localeCompare(b.username))
+            let users = action === 'reject' ? [...oldData.gpUsers] : [...oldData.gpUsers , res.user].sort((a,b)=>a.username - b.username)
 
             return {
               ...oldData,

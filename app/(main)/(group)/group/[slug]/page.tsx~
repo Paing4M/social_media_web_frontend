@@ -35,7 +35,7 @@ const ProfilePage = async ({ params }: GroupProfileParams) => {
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<GroupContainer slug={params.slug!} />
+			<GroupContainer />
 		</HydrationBoundary>
 	)
 }
