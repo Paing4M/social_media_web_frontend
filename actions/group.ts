@@ -72,3 +72,14 @@ export const getGpPosts = async (id :number , cursor: string | null = null) =>{
   const res = await Axios.get(`/group/${id}/post?cursor=${cursor}`)
   return res.data
 }
+
+
+type GpChangeRole = {
+  user_id:number,
+  role :string,
+  slug:string
+}
+export const gpChangeRole = async (data:GpChangeRole) =>{
+  const res = await Axios.post('/group/change-role/' + data.slug , {user_id:data.user_id , role:data.role})
+  return res.data
+}

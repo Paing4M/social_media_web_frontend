@@ -2,7 +2,7 @@ import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
 import {
   changeGroupProfile,
   createGroup, getGpPosts, getGroup,
-  getGroups, gpChangeRole,
+  getGroups,
   groupRequestAction,
   inviteToGroup,
   joinGroup
@@ -73,13 +73,6 @@ const useGetGpPosts = (id: number) => {
   })
 }
 
-const useGpChangeRole = () =>{
-  return useMutation({
-    mutationKey:['post' , 'changeGpRole'],
-    mutationFn: gpChangeRole
-  })
-}
-
 
 export const useGroup = () => {
   return {
@@ -90,7 +83,6 @@ export const useGroup = () => {
     useJoinGroup,
     useGpAction,
     useGetGroupWithSlug,
-    useGetGpPosts,
-    useGpChangeRole
+    useGetGpPosts
   }
 }

@@ -109,7 +109,7 @@ const ProfileTabs = ({
       <Tabs
         defaultValue={activeTab}
         onValueChange={(value)=>setActiveTab(value)}
-        className='flex flex-col gap-y-5'
+        className='flex flex-col'
       >
         <div className='bg-background shadow-sm rounded-b-lg relative  px-6'>
           <div className='border-b'>
@@ -265,7 +265,7 @@ const ProfileTabs = ({
 
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
-            <GroupRequestList group_slug={group.slug}  users={data.gpRequestUsers!}  />
+            <GroupUserList isRequestUser group_slug={group.slug}  users={data.gpRequestUsers!}  />
           </TabsContent>
         )}
 

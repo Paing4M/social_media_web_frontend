@@ -12,7 +12,6 @@ import {useSession} from "next-auth/react";
 import {useGroup} from "@/hooks/useGroup";
 import toast from "react-hot-toast";
 import GroupUserList from "@/components/group/GroupUserList";
-import GroupRequestList from "@/components/group/GroupRequestList";
 import GroupPosts from "@/components/group/GroupPosts";
 
 
@@ -265,7 +264,7 @@ const ProfileTabs = ({
 
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
-            <GroupRequestList group_slug={group.slug}  users={data.gpRequestUsers!}  />
+            <GroupUserList isRequestUser group_slug={group.slug}  users={data.gpRequestUsers!}  />
           </TabsContent>
         )}
 
