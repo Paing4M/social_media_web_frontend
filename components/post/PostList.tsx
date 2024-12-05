@@ -58,25 +58,19 @@ const PostList = ({groupId = null , currentUserRole} : PostListProps) => {
 
 					// delete the post
 					queryClient.setQueryData(
-						groupId ?
-							['get' , 'getGpPosts' , groupId]:['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]>) => {
-							if (!oldData) return
-							const newData = {
+						groupId
+							? ['get', 'getGpPosts', groupId]
+							: ['get', 'getPosts'],
+						(oldData: QueryDataInterface<Post[]> | undefined) => {
+							if (!oldData) return oldData;
+
+							return {
 								...oldData,
-								pages: oldData.pages.map((page) => {
-									let updatedPost = page.data.filter(
-										(post) => post.id !== res?.post_id
-									)
-
-									return {
-										...page,
-										data: updatedPost,
-									}
-								}),
-							}
-
-							return newData
+								pages: oldData.pages.map((page) => ({
+									...page,
+									data: page.data.filter((post) => post.id !== res.post_id),
+								})),
+							};
 						}
 					)
 
