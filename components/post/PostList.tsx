@@ -15,9 +15,10 @@ import {useGroup} from "@/hooks/useGroup";
 
 type PostListProps = {
 	groupId?: number | null
+	currentUserRole?:string | null
 }
 
-const PostList = ({groupId = null} : PostListProps) => {
+const PostList = ({groupId = null , currentUserRole} : PostListProps) => {
 	const [open, setOpen] = useState(false)
 	const [openPreview, setOpenPreview] = useState(false)
 	const [editPost, setEditPost] = useState<Post | null>(null)
@@ -137,12 +138,13 @@ const PostList = ({groupId = null} : PostListProps) => {
 		}
 	}
 
-	// console.log(hasNextPage)
+	console.log(currentUserRole)
 
 
 	if (isLoading && !isFetchingNextPage) return <Loading className={'mt-2'}/>
 
 	if(posts.length === 0 ) return <p className='text-sm text-center'> posts not found.</p>
+
 
 	return (
 		<>
@@ -154,6 +156,7 @@ const PostList = ({groupId = null} : PostListProps) => {
 			>
 				{posts?.map((post) => (
 					<PostItem
+						currentUserRole={currentUserRole}
 						key={post?.id}
 						post={post!}
 						handleEdit={handleEdit}
@@ -168,6 +171,7 @@ const PostList = ({groupId = null} : PostListProps) => {
 
 			{/* edit modal */}
 			<PostEditModal
+				groupId={groupId || null}
 				title='Edit Post'
 				key={editPost?.id!}
 				post={editPost}

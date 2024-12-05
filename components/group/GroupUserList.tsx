@@ -11,10 +11,10 @@ import GroupUser from "@/components/group/GroupUser";
 interface GroupUserListProps {
   users: BaseUserInterface[] | GroupUserInterface[]
   group_slug: string,
-  isRequestUser?: boolean
+  isRequestUser?: boolean,
 }
 
-const GroupUserList = ({users, group_slug, isRequestUser = false}: GroupUserListProps) => {
+const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserListProps) => {
   const [input, setInput] = useState('');
 
   const {useGpAction, useGpChangeRole} = useGroup()

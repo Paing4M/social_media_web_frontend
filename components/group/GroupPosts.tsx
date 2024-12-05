@@ -1,9 +1,9 @@
 import React from 'react'
 import PostList from "@/components/post/PostList";
 
-const GroupPosts = ({id}: { id: number }) => {
+const GroupPosts = ({id , currentUserRole}: { id: number , currentUserRole?:string | null }) => {
   return (
-    <PostList groupId={id}/>
+    <PostList currentUserRole={currentUserRole} groupId={id}/>
   )
 }
 export default GroupPosts

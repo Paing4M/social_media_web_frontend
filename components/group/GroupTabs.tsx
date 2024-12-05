@@ -253,18 +253,22 @@ const ProfileTabs = ({
 
         {/* tabs content */}
         <TabsContent value='posts'>
-          <GroupPosts id={group.id!}/>
+          <GroupPosts currentUserRole={group.current_user_role} id={group.id!}/>
 
         </TabsContent>
         {group.current_user_role === 'admin' && (
           <TabsContent value='users'>
-            <GroupUserList group_slug={group.slug} users={data.gpUsers!} />
+            <GroupUserList
+
+              group_slug={group.slug} users={data.gpUsers!} />
           </TabsContent>
         )}
 
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
-            <GroupUserList isRequestUser group_slug={group.slug}  users={data.gpRequestUsers!}  />
+            <GroupUserList
+
+              isRequestUser group_slug={group.slug}  users={data.gpRequestUsers!}  />
           </TabsContent>
         )}
 
