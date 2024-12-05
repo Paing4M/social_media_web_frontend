@@ -47,8 +47,6 @@ const PostItem = ({
                   }: PostItemProps) => {
   const session = useSession()
 
-  console.log(post)
-
 
   return (
     <div className='p-4 rounded-lg bg-background shadow-sm border'>
@@ -74,7 +72,7 @@ const PostItem = ({
           </div>
         </div>
 
-        {(role == 'admin' || post?.user.id == session?.data?.user.id) && (
+        {/*{(role == 'admin' || post?.user.id == session?.data?.user.id) && (*/}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className='border-none outline-none'>
@@ -103,7 +101,7 @@ const PostItem = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )}
+        {/*)}*/}
       </div>
 
       {post?.body && <SeeMore text={post?.body} className='mt-2'/>}
