@@ -1,16 +1,29 @@
+'use client'
+
 import React from 'react'
 import User from "@/components/group/User";
+import GpButton from "@/components/group/GpButton";
+import {useGroup} from "@/hooks/useGroup";
 
 interface GroupUserProps {
   user: GroupUserInterface
+  currentUserRole:string
   handleRole: (role: string, user_id: number) => void
 }
 
-const GroupUser = ({user, handleRole}: GroupUserProps) => {
+const GroupUser = ({user, handleRole , currentUserRole}: GroupUserProps) => {
+const {useRemoveGpUser} = useGroup()
+const {} = useRemoveGpUser()
+
+
+
+  const handleRemoveUser = async () =>{
+
+  }
 
   return (
     <User user={user}>
-      <div className={'text-sm'}>
+      <div className={'flex items-center gap-2'}>
         <select
           value={user.role}
           onChange={e => handleRole(e.target.value, user.id)}
@@ -19,6 +32,12 @@ const GroupUser = ({user, handleRole}: GroupUserProps) => {
           <option value="user">user</option>
         </select>
 
+
+        {currentUserRole === 'admin' && (
+          <GpButton onClick={handleRemoveUser} name='Delete' variant={'destructive'}  className='text-sm'>
+            Delete
+          </GpButton>
+        )}
       </div>
     </User>
   )

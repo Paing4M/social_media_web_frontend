@@ -2,6 +2,7 @@
 
 import UserAvatar from '../avatar/UserAvatar'
 import {
+  ChevronRight,
   EllipsisVerticalIcon,
   MessageSquareIcon,
   PencilIcon,
@@ -35,6 +36,7 @@ interface PostItemProps {
   handlePreview: (attachments: PostAttachmentInterface[], idx: number) => void
   handleReaction: (id: number) => void
   currentUserRole?: string | null
+  groupId?: number | null
 }
 
 const PostItem = ({
@@ -43,7 +45,8 @@ const PostItem = ({
                     handleDelete,
                     handlePreview,
                     handleReaction,
-                    currentUserRole: role = null
+                    currentUserRole: role = null,
+                    groupId = null
                   }: PostItemProps) => {
   const session = useSession()
 
@@ -62,8 +65,11 @@ const PostItem = ({
                 {post?.user?.name}
               </Link>
               {post?.group?.id && (
-                <Link href={`/group/${post?.group?.slug}`}
-                      className='text-sm font-semibold'>{`> ${post?.group?.name}`}</Link>
+                <>
+                  <ChevronRight className='w-4 h-4'/>
+                  <Link href={`/group/${post?.group?.slug}`}
+                        className='font-semibold hover:underline text-[.9rem]'>{`${post?.group?.name}`}</Link>
+                </>
               )}
             </div>
             <p className='text-muted-foreground text-xs leading-4'>
@@ -154,7 +160,7 @@ const PostItem = ({
             className='data-[state=open]:animate-accordion-down
             data-[state=closed]:animate-accordion-up '
           >
-            <PostComment post={post}/>
+            <PostComment post={post} groupId={groupId} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

@@ -69,7 +69,8 @@ const GroupContainer = ({slug}: GroupContainerProps) => {
     }
   }
 
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
+
   async function handleSubmit() {
 
     if (!thumbnailFile && !coverFile) return
@@ -86,10 +87,10 @@ const GroupContainer = ({slug}: GroupContainerProps) => {
         {
           onSuccess: (res) => {
             // console.log('success', res)
-            queryClient.setQueryData(['getGpBySlug' , slug] ,(oldData:GroupProfileInterface)=>{
-              return {...oldData , group:res.group }
-            } )
-            
+            queryClient.setQueryData(['getGpBySlug', slug], (oldData: GroupProfileInterface) => {
+              return {...oldData, group: res.group}
+            })
+
             clearThumbnail()
             clearCover()
             toast.success(res?.message)

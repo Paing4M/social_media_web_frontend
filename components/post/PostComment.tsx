@@ -12,16 +12,19 @@ import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import {EditorContent} from '@tiptap/react'
 import {useCustomEditor} from '../UseCustomEditor'
+import {useParams} from "next/navigation";
 
 type PostCommentProps = {
   post: Post
+  groupId?: number | null
 }
 
 export type CmtError = {
   comment: [string]
+
 }
 
-const PostComment = ({post}: PostCommentProps) => {
+const PostComment = ({post , groupId}: PostCommentProps) => {
   const [error, setError] = useState<CmtError | null>(null)
   const {useCreateComment} = useComment()
   const {mutateAsync, isPending} = useCreateComment()
@@ -33,6 +36,8 @@ const PostComment = ({post}: PostCommentProps) => {
 
   const input = editor?.getText({blockSeparator: '\n'}) || ''
 
+
+
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -43,9 +48,11 @@ const PostComment = ({post}: PostCommentProps) => {
       await mutateAsync(data, {
         onSuccess: (res) => {
           queryClient.setQueryData(
-            post?.group.id ? ['get', 'getGpPosts', post?.group.id] : ['get', 'getPosts'],
+            groupId ? ['get', 'getGpPosts', post?.group.id] : ['get', 'getPosts'],
             (oldData: QueryDataInterface<Post[]> | undefined) => {
               if (!oldData) return
+              console.log({oldData})
+
 
               const newData = {
                 ...oldData,

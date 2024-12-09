@@ -83,3 +83,11 @@ export const gpChangeRole = async (data:GpChangeRole) =>{
   const res = await Axios.post('/group/change-role/' + data.slug , {user_id:data.user_id , role:data.role})
   return res.data
 }
+
+type GpRemoveUser = {
+
+}
+export const gpRemoveUser = async (slug:string , user_id:number ) =>{
+  const res = await Axios.post(`/group/${slug}/user/${user_id}/remove-from-group` )
+  return res.data
+}

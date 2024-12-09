@@ -259,7 +259,7 @@ const ProfileTabs = ({
         {group.current_user_role === 'admin' && (
           <TabsContent value='users'>
             <GroupUserList
-
+              currentUserRole={group.current_user_role!}
               group_slug={group.slug} users={data.gpUsers!} />
           </TabsContent>
         )}
@@ -267,7 +267,7 @@ const ProfileTabs = ({
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
             <GroupUserList
-
+              currentUserRole={group.current_user_role!}
               isRequestUser group_slug={group.slug}  users={data.gpRequestUsers!}  />
           </TabsContent>
         )}

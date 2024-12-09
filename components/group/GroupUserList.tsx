@@ -12,9 +12,10 @@ interface GroupUserListProps {
   users: BaseUserInterface[] | GroupUserInterface[]
   group_slug: string,
   isRequestUser?: boolean,
+  currentUserRole: string | null ,
 }
 
-const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserListProps) => {
+const GroupUserList = ({users, group_slug, isRequestUser = false, currentUserRole = null}: GroupUserListProps) => {
   const [input, setInput] = useState('');
 
   const {useGpAction, useGpChangeRole} = useGroup()
@@ -22,6 +23,7 @@ const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserLis
   const {mutateAsync: mutateChangeRole} = useGpChangeRole()
 
   const queryClient = useQueryClient()
+
 
   if (users?.length == 0) {
     return (<p className={'w-full text-center text-sm mt-5'}>No request found.</p>)
@@ -48,6 +50,7 @@ const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserLis
             const removedUser = oldData.gpRequestUsers.filter(user => user.id !== res.user.id)
 
             let users = action === 'reject' ? [...oldData.gpUsers] : [...oldData.gpUsers, res.user].sort((a, b) => a.username.localeCompare(b.username))
+            console.log(res.user)
 
             return {
               ...oldData,
@@ -89,13 +92,12 @@ const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserLis
       })
     } catch (e: any) {
       // console.log(e)
-      if(e.response.status === 403) {
+      if (e.response.status === 403) {
         toast.error(e.response.data.message)
       }
     }
 
   }
-
 
   return (
     <div className='mt-5'>
@@ -103,12 +105,17 @@ const GroupUserList = ({users, group_slug, isRequestUser = false }: GroupUserLis
       <div className='grid grid-col-1 md:grid-cols-2 gap-2'>
         {users?.filter(user => user?.username!.includes(input.toLowerCase()))?.map(user => (
 
-          isRequestUser ? <GroupRequest key={user.id + '_' + user.username} user={user as BaseUserInterface}
-                                        handleAction={handleAction}/> :
-            <GroupUser key={user.id + '_' + user.username} user={user as GroupUserInterface}
-                       handleRole={handleRole}/>
-
-
+          isRequestUser ?
+            <GroupRequest
+              key={user.id + '_' + user.username}
+              user={user as BaseUserInterface}
+              handleAction={handleAction}/>
+            :
+            <GroupUser
+              key={user.id + '_' + user.username}
+              user={user as GroupUserInterface}
+              currentUserRole={currentUserRole!}
+              handleRole={handleRole}/>
         ))}
       </div>
     </div>

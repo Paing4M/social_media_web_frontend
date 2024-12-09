@@ -108,7 +108,7 @@ const PostList = ({groupId = null , currentUserRole} : PostListProps) => {
 				onSuccess: (res) => {
 					queryClient.setQueryData(
 						groupId ?
-							['get' , 'getGpPosts' , groupId]:['get', 'getPosts'],
+							['get' , 'getGpPosts' , groupId] : ['get', 'getPosts'],
 						(oldData: QueryDataInterface<Post[]>) => {
 							if (!oldData) return
 							const newData = {
@@ -152,6 +152,7 @@ const PostList = ({groupId = null , currentUserRole} : PostListProps) => {
 			>
 				{posts?.map((post) => (
 					<PostItem
+						groupId={groupId!}
 						currentUserRole={currentUserRole}
 						key={post?.id}
 						post={post!}
