@@ -37,6 +37,7 @@ interface PostItemProps {
   handleReaction: (id: number) => void
   currentUserRole?: string | null
   groupId?: number | null
+  username?: string | null
 }
 
 const PostItem = ({
@@ -46,7 +47,8 @@ const PostItem = ({
                     handlePreview,
                     handleReaction,
                     currentUserRole: role = null,
-                    groupId = null
+                    groupId = null,
+                    username = null
                   }: PostItemProps) => {
   const session = useSession()
 
@@ -55,10 +57,13 @@ const PostItem = ({
     <div className='p-4 rounded-lg bg-background shadow-sm border'>
       <div className='flex items-center justify-between'>
         <div className='flex items-start gap-3'>
-          <UserAvatar
-            name={post?.user?.username!}
-            src={post?.user?.avatar_url!}
-          />
+          <Link href={`/profile/${post?.user?.username}`}>
+            <UserAvatar
+              name={post?.user?.username!}
+              src={post?.user?.avatar_url!}
+            />
+          </Link>
+
           <div>
             <div className='flex items-center gap-2'>
               <Link href={`/profile/${post?.user?.username}`} className='text-[16px] font-semibold tracking-wide '>
@@ -160,7 +165,7 @@ const PostItem = ({
             className='data-[state=open]:animate-accordion-down
             data-[state=closed]:animate-accordion-up '
           >
-            <PostComment post={post} groupId={groupId} />
+            <PostComment post={post} groupId={groupId} username={username}/>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

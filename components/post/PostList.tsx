@@ -1,194 +1,203 @@
 'use client'
 
-import { usePost } from '@/hooks/usePost'
+import {usePost} from '@/hooks/usePost'
 import PostItem from './PostItem'
 import InfiniteScrollContainer from '../InfiniteScrollContainer'
 import Loading from '../Loading'
 import PostEditModal from '../modal/PostEditModal'
-import { useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import {useState} from 'react'
+import {useQueryClient} from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import AttachmentPreviewModal from '../modal/AttachmentPreviewModal'
-import { usePostReaction } from '@/hooks/usePostReaction'
+import {usePostReaction} from '@/hooks/usePostReaction'
 import {useGroup} from "@/hooks/useGroup";
+import {useUser} from "@/hooks/useUser";
 
 
 type PostListProps = {
-	groupId?: number | null
-	currentUserRole?:string | null
+  username?: string | null
+  groupId?: number | null
+  currentUserRole?: string | null
 }
 
-const PostList = ({groupId = null , currentUserRole} : PostListProps) => {
-	const [open, setOpen] = useState(false)
-	const [openPreview, setOpenPreview] = useState(false)
-	const [editPost, setEditPost] = useState<Post | null>(null)
-	const [attachmentsPreview, setAttachmentsPreview] = useState<
-		PostAttachmentInterface[] | []
-	>([])
-	const [previewIndex, setPreviewIndex] = useState(0)
+const PostList = ({groupId = null, currentUserRole, username = null}: PostListProps) => {
+  const [open, setOpen] = useState(false)
+  const [openPreview, setOpenPreview] = useState(false)
+  const [editPost, setEditPost] = useState<Post | null>(null)
+  const [attachmentsPreview, setAttachmentsPreview] = useState<
+    PostAttachmentInterface[] | []
+  >([])
+  const [previewIndex, setPreviewIndex] = useState(0)
 
-	const {useGetGpPosts} = useGroup()
-	const { useGetPosts, useDeleteMutation  } = usePost()
-	const { useCreateReaction } = usePostReaction()
-	const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-	groupId ? useGetGpPosts(groupId!) :	useGetPosts()
+  const {useGetGpPosts} = useGroup()
+  const {useGetPosts, useDeleteMutation} = usePost()
+  const {useCreateReaction} = usePostReaction()
+  const {useGetUserPosts} = useUser()
+  const {data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage} =
+    username ? useGetUserPosts(username) : groupId ? useGetGpPosts(groupId!) : useGetPosts()
 
-	const { mutateAsync } = useDeleteMutation()
-	const { mutateAsync: reactionMutateAsync } = useCreateReaction()
+  const {mutateAsync} = useDeleteMutation()
+  const {mutateAsync: reactionMutateAsync} = useCreateReaction()
 
-	const posts = data?.pages.flatMap((page) => page.data) || []
+  const posts = data?.pages.flatMap((page) => page.data) || []
 
-	function handleEdit(post: Post) {
-		setOpen(true)
-		setEditPost(post)
-	}
+  function handleEdit(post: Post) {
+    setOpen(true)
+    setEditPost(post)
+  }
 
-	function closeModal() {
-		setOpen(false)
-		setEditPost(null)
-	}
+  function closeModal() {
+    setOpen(false)
+    setEditPost(null)
+  }
 
-	const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
-	async function handleDelete(id: number) {
-		try {
-			await mutateAsync(id, {
-				onSuccess: (res) => {
-					// console.log(res)
+  async function handleDelete(id: number) {
+    try {
+      await mutateAsync(id, {
+        onSuccess: (res) => {
+          console.log(res)
 
-					// delete the post
-					queryClient.setQueryData(
-						groupId
-							? ['get', 'getGpPosts', groupId]
-							: ['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]> | undefined) => {
-							if (!oldData) return oldData;
+          // delete the post
+          queryClient.setQueryData(
+            username
+              ? ['get', 'getUserPosts', username]
+              : groupId
+                ? ['get', 'getGpPosts', groupId]
+                : ['get', 'getPosts'],
+            (oldData: QueryDataInterface<Post[]> | undefined) => {
+              if (!oldData) return oldData;
 
-							return {
-								...oldData,
-								pages: oldData.pages.map((page) => ({
-									...page,
-									data: page.data.filter((post) => post.id !== res.post_id),
-								})),
-							};
-						}
-					)
+              return {
+                ...oldData,
+                pages: oldData.pages.map((page) => ({
+                  ...page,
+                  data: page.data.filter((post) => post.id !== res.post_id),
+                })),
+              };
+            }
+          )
 
-					toast.success(res.message)
-				},
-			})
-		} catch (err:any) {
-			// console.log(err)
-			if(err?.response?.status == 403) {
-				toast.error(err?.response?.data?.message)
-			}
-		}
-	}
+          toast.success(res.message)
+        },
+      })
+    } catch (err: any) {
+      // console.log(err)
+      if (err?.response?.status == 403) {
+        toast.error(err?.response?.data?.message)
+      }
+    }
+  }
 
-	function handlePreview(attachments: PostAttachmentInterface[], idx: number) {
-		setAttachmentsPreview(attachments)
-		setPreviewIndex(idx)
-		setOpenPreview(true)
-	}
+  function handlePreview(attachments: PostAttachmentInterface[], idx: number) {
+    setAttachmentsPreview(attachments)
+    setPreviewIndex(idx)
+    setOpenPreview(true)
+  }
 
-	function closePreview() {
-		setAttachmentsPreview([])
-		setPreviewIndex(0)
-		setOpenPreview(false)
-	}
+  function closePreview() {
+    setAttachmentsPreview([])
+    setPreviewIndex(0)
+    setOpenPreview(false)
+  }
 
-	async function handleReaction(id: number) {
-		try {
-			let data = {
-				reaction: 'like',
-				id: id,
-			}
+  async function handleReaction(id: number) {
+    try {
+      let data = {
+        reaction: 'like',
+        id: id,
+      }
 
-		await reactionMutateAsync(data, {
-				onSuccess: (res) => {
-					queryClient.setQueryData(
-						groupId ?
-							['get' , 'getGpPosts' , groupId] : ['get', 'getPosts'],
-						(oldData: QueryDataInterface<Post[]>) => {
-							if (!oldData) return
-							const newData = {
-								...oldData,
-								pages: oldData.pages.map((page) => {
-									return {
-										...page,
-										data: page.data.map((post) =>
-											post.id === res.post.id
-												? { ...post, ...res.post }
-												: post
-										),
-									}
-								}),
-							}
+      await reactionMutateAsync(data, {
+        onSuccess: (res) => {
+          queryClient.setQueryData(
+            username ?
+              ['get', 'getUserPosts', username]
+              :
+              groupId ?
+                ['get', 'getGpPosts', groupId] : ['get', 'getPosts'],
+            (oldData: QueryDataInterface<Post[]>) => {
+              if (!oldData) return
+              const newData = {
+                ...oldData,
+                pages: oldData.pages.map((page) => {
+                  return {
+                    ...page,
+                    data: page.data.map((post) =>
+                      post.id === res.post.id
+                        ? {...post, ...res.post}
+                        : post
+                    ),
+                  }
+                }),
+              }
 
-							return newData
-						}
-					)
-				},
-			})
-		} catch (err) {
-			console.log(err)
-		}
-	}
-
-
-
-	if (isLoading && !isFetchingNextPage) return <Loading className={'mt-2'}/>
-
-	if(posts.length === 0 ) return <p className='text-sm text-center'> posts not found.</p>
+              return newData
+            }
+          )
+        },
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
 
-	return (
-		<>
-			<InfiniteScrollContainer
-				isOnBottom={() => {
-					hasNextPage && !isFetchingNextPage && fetchNextPage()
-				}}
-				className='mt-5 pb-5 flex flex-col gap-5'
-			>
-				{posts?.map((post) => (
-					<PostItem
-						groupId={groupId!}
-						currentUserRole={currentUserRole}
-						key={post?.id}
-						post={post!}
-						handleEdit={handleEdit}
-						handlePreview={handlePreview}
-						handleDelete={handleDelete}
-						handleReaction={handleReaction}
-					/>
-				))}
+  if (isLoading && !isFetchingNextPage) return <Loading className={'mt-2'}/>
 
-				{isFetchingNextPage && <Loading />}
-			</InfiniteScrollContainer>
+  if (posts.length === 0) return <p className='text-sm text-center'> posts not found.</p>
 
-			{/* edit modal */}
-			<PostEditModal
-				groupId={groupId || null}
-				title='Edit Post'
-				key={editPost?.id!}
-				post={editPost}
-				open={open}
-				closeModal={closeModal}
-			/>
 
-			{/* preview modal */}
-			{attachmentsPreview.length > 0 && (
-				<AttachmentPreviewModal
-					key={attachmentsPreview?.length}
-					attachments={attachmentsPreview}
-					open={openPreview}
-					idx={previewIndex}
-					closeModal={closePreview}
-					setIndex={setPreviewIndex}
-				/>
-			)}
-		</>
-	)
+  return (
+    <>
+      <InfiniteScrollContainer
+        isOnBottom={() => {
+          hasNextPage && !isFetchingNextPage && fetchNextPage()
+        }}
+        className='mt-5 pb-5 flex flex-col gap-5'
+      >
+        {posts?.map((post) => (
+          <PostItem
+            username={username}
+            groupId={groupId!}
+            currentUserRole={currentUserRole}
+            key={post?.id}
+            post={post!}
+            handleEdit={handleEdit}
+            handlePreview={handlePreview}
+            handleDelete={handleDelete}
+            handleReaction={handleReaction}
+          />
+        ))}
+
+        {isFetchingNextPage && <Loading/>}
+      </InfiniteScrollContainer>
+
+      {/* edit modal */}
+      <PostEditModal
+        username={username || null}
+        groupId={groupId || null}
+        title='Edit Post'
+        key={editPost?.id!}
+        post={editPost}
+        open={open}
+        closeModal={closeModal}
+      />
+
+      {/* preview modal */}
+      {attachmentsPreview.length > 0 && (
+        <AttachmentPreviewModal
+          key={attachmentsPreview?.length}
+          attachments={attachmentsPreview}
+          open={openPreview}
+          idx={previewIndex}
+          closeModal={closePreview}
+          setIndex={setPreviewIndex}
+        />
+      )}
+    </>
+  )
 }
 
 export default PostList

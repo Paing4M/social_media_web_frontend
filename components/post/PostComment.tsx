@@ -17,6 +17,7 @@ import {useCustomEditor} from '../UseCustomEditor'
 type PostCommentProps = {
   post: Post
   groupId?: number | null
+  username?: string | null
 }
 
 export type CmtError = {
@@ -24,7 +25,7 @@ export type CmtError = {
 
 }
 
-const PostComment = ({post , groupId}: PostCommentProps) => {
+const PostComment = ({post, groupId, username}: PostCommentProps) => {
   const [error, setError] = useState<CmtError | null>(null)
   const {useCreateComment} = useComment()
   const {mutateAsync, isPending} = useCreateComment()
@@ -37,7 +38,6 @@ const PostComment = ({post , groupId}: PostCommentProps) => {
   const input = editor?.getText({blockSeparator: '\n'}) || ''
 
 
-
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -48,7 +48,10 @@ const PostComment = ({post , groupId}: PostCommentProps) => {
       await mutateAsync(data, {
         onSuccess: (res) => {
           queryClient.setQueryData(
-            groupId ? ['get', 'getGpPosts', post?.group.id] : ['get', 'getPosts'],
+            username ?
+              ['get', 'getUserPosts', username] :
+              groupId ? ['get', 'getGpPosts', post?.group.id] :
+                ['get', 'getPosts'],
             (oldData: QueryDataInterface<Post[]> | undefined) => {
               if (!oldData) return
               console.log({oldData})

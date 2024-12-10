@@ -8,6 +8,8 @@ import ProfileUserInfo from './ProfileUserInfo'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import Loading from '../Loading'
 import React from "react";
+import PostList from "@/components/post/PostList";
+import {useParams} from "next/navigation";
 
 interface ProfileTabsProps {
 	data: Session
@@ -36,6 +38,11 @@ const ProfileTabs = ({
 	loading,
 	clearAvatar,
 }: ProfileTabsProps) => {
+	
+	const {username} = useParams()
+
+
+
 	return (
 		<>
 			<Tabs
@@ -176,7 +183,10 @@ const ProfileTabs = ({
 					</TabsContent>
 				)}
 
-				<TabsContent value='posts'>posts</TabsContent>
+				<TabsContent value='posts'>
+					<PostList username={username?.toString()}/>
+				</TabsContent>
+
 				<TabsContent value='followers'>followers</TabsContent>
 				<TabsContent value='followings'>followings</TabsContent>
 				<TabsContent value='photos'>photos</TabsContent>
