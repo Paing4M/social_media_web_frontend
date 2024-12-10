@@ -10,6 +10,7 @@ import Loading from '../Loading'
 import React from "react";
 import PostList from "@/components/post/PostList";
 import {useParams} from "next/navigation";
+import PostTextEditor from "@/components/post/PostTextEditor";
 
 interface ProfileTabsProps {
 	data: Session
@@ -184,6 +185,7 @@ const ProfileTabs = ({
 				)}
 
 				<TabsContent value='posts'>
+					<PostTextEditor user={data?.user} username={username.toString()}/>
 					<PostList username={username?.toString()}/>
 				</TabsContent>
 

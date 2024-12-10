@@ -253,7 +253,7 @@ const ProfileTabs = ({
 
         {/* tabs content */}
         <TabsContent value='posts'>
-          <GroupPosts currentUserRole={group.current_user_role} id={group.id!}/>
+          <GroupPosts isUserInGroup={group.is_current_user_in_group} currentUserRole={group.current_user_role} id={group.id!}/>
 
         </TabsContent>
         {group.current_user_role === 'admin' && (

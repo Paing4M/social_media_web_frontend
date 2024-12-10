@@ -15,8 +15,11 @@ import {v4 as uuidv4} from 'uuid'
 import PostPreviewAttachments from './PostPreviewAttachments'
 import {useCustomEditor} from '../UseCustomEditor'
 
+
 interface PostTextEditorProps {
 	user: UserInterface
+	groupId?:number | null
+	username?: string | null
 }
 
 export interface Error {
@@ -52,10 +55,11 @@ export let extensions = [
 	'exe',
 ]
 
-const PostTextEditor = ({ user }: PostTextEditorProps) => {
+const PostTextEditor = ({ user , groupId , username }: PostTextEditorProps) => {
 	const [error, setError] = useState<Error | null>(null)
 	const [attachments, setAttachments] = useState<Attachment[] | []>([])
 	const [extWarning, setExtWarning] = useState(false)
+
 
 	const { useAddMutation } = usePost()
 	const { mutateAsync, isPending } = useAddMutation()
@@ -64,6 +68,7 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 	const input = editor?.getText({ blockSeparator: '\n' }) || ''
 
 	const queryClient = useQueryClient()
+
 
 	async function onSubmit() {
 		try {
@@ -76,7 +81,11 @@ const PostTextEditor = ({ user }: PostTextEditorProps) => {
 				onSuccess: (res) => {
 					// console.log(res)
 					queryClient.setQueryData(
-						['get', 'getPosts'],
+						username
+							? ['get', 'getUserPosts', username]
+							: groupId
+								? ['get', 'getGpPosts', groupId]
+								: ['get', 'getPosts'],
 						(oldData: QueryDataInterface<Post[]>) => {
 							return {
 								...oldData,
