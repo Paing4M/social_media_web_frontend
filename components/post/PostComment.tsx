@@ -12,7 +12,7 @@ import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import {EditorContent} from '@tiptap/react'
 import {useCustomEditor} from '../UseCustomEditor'
-import {useParams} from "next/navigation";
+
 
 type PostCommentProps = {
   post: Post

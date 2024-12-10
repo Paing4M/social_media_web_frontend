@@ -81,10 +81,10 @@ const useGpChangeRole = () =>{
 }
 
 
-const useRemoveGpUser = (slug:string , user_id:number) =>{
+const useRemoveGpUser = () =>{
   return useMutation({
-    mutationKey:['post' , 'removeGpUser' , slug , user_id],
-    mutationFn:()=>gpRemoveUser(slug , user_id)
+    mutationKey:['post' , 'removeGpUser'],
+    mutationFn:gpRemoveUser
   })
 }
 

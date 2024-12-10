@@ -4,21 +4,54 @@ import React from 'react'
 import User from "@/components/group/User";
 import GpButton from "@/components/group/GpButton";
 import {useGroup} from "@/hooks/useGroup";
+import {useParams} from "next/navigation";
+import {useQueryClient} from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 interface GroupUserProps {
   user: GroupUserInterface
-  currentUserRole:string
+  currentUserRole: string
   handleRole: (role: string, user_id: number) => void
 }
 
-const GroupUser = ({user, handleRole , currentUserRole}: GroupUserProps) => {
-const {useRemoveGpUser} = useGroup()
-const {} = useRemoveGpUser()
+const GroupUser = ({user, handleRole, currentUserRole}: GroupUserProps) => {
+
+  const {slug} = useParams()
 
 
+  const {useRemoveGpUser} = useGroup()
+  const {mutateAsync, isPending} = useRemoveGpUser()
 
-  const handleRemoveUser = async () =>{
+  const queryClient = useQueryClient()
+  const handleRemoveUser = async () => {
+    try {
+      const data = {
+        slug: slug.toString(),
+        user_id: user.id,
+      }
 
+      await mutateAsync(data, {
+        onSuccess: (res) => {
+          console.log(res)
+          queryClient.setQueryData(['getGpBySlug', slug] , (oldData:GroupProfileInterface)=>{
+            if(!oldData) return
+            const deletedUser = oldData.gpUsers.filter(user => user.id !== res.user_id)
+            return {
+              ...oldData ,
+              gpUsers:deletedUser
+            }
+          })
+          toast.success(res.message)
+
+        }
+      })
+
+    } catch (e: any) {
+      console.log(e)
+      if(e.response?.status === 403) {
+        toast.error(e.response?.data?.message)
+      }
+    }
   }
 
   return (
@@ -34,7 +67,7 @@ const {} = useRemoveGpUser()
 
 
         {currentUserRole === 'admin' && (
-          <GpButton onClick={handleRemoveUser} name='Delete' variant={'destructive'}  className='text-sm'>
+          <GpButton onClick={handleRemoveUser} name='Delete' variant={'destructive'} className='text-sm'>
             Delete
           </GpButton>
         )}
