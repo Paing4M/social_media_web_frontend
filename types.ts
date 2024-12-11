@@ -12,6 +12,7 @@ interface BaseUserInterface {
 	created_at:string
 	avatar_url?: string | null
 	cover_url?: string | null
+	isFollowedByCurrentUser:boolean | null
 }
 
 interface GpUserInterface extends BaseUserInterface {

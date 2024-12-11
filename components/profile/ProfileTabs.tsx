@@ -2,7 +2,7 @@
 
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@radix-ui/react-tabs'
 import {Button} from '../ui/button'
-import {CameraIcon, PencilIcon, UserRoundPlusIcon, XIcon} from 'lucide-react'
+import {CameraIcon, PencilIcon, UserRoundMinusIcon, UserRoundPlusIcon, XIcon} from 'lucide-react'
 import {Session} from 'next-auth'
 import ProfileUserInfo from './ProfileUserInfo'
 import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar'
@@ -12,6 +12,8 @@ import PostList from "@/components/post/PostList";
 import {useParams} from "next/navigation";
 import PostTextEditor from "@/components/post/PostTextEditor";
 import {useUser} from "@/hooks/useUser";
+import {useQueryClient} from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 
 interface ProfileTabsProps {
@@ -46,11 +48,19 @@ const ProfileTabs = ({
   const {useFollowMutation} = useUser()
   const {mutateAsync} = useFollowMutation()
 
+  const quertClient = useQueryClient()
+
   const handleFollowAction = async () => {
     try {
       await mutateAsync(user.id, {
-        onSuccess: (res) => {
-          console.log(res)
+        onSuccess: (res:any) => {
+          // console.log(res)
+          quertClient.setQueryData(['getProfile', user.username], (oldData: UserInterface) => {
+            if (!oldData) return
+            const status = res.status == 201 ? true : res.status == 200 ? false : null
+            return {...oldData, isFollowedByCurrentUser: status}
+          })
+          toast.success(res.message)
         }
       })
     } catch (e: any) {
@@ -136,17 +146,31 @@ const ProfileTabs = ({
                   {loading ? 'Processing' : 'Save'}
                 </Button>
               ) : (
-                <Button
-                  onClick={handleFollowAction}
-                  className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
-                >
-                  {loading ? (
-                    <Loading/>
-                  ) : (
-                    <UserRoundPlusIcon className='size-4'/>
-                  )}
-                  {loading ? 'Processing' : 'Follow'}
-                </Button>
+                <>
+                  {user.isFollowedByCurrentUser ? <Button
+                      onClick={handleFollowAction}
+                      variant='destructive'
+                      className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+                    >
+                      {loading ? (
+                        <Loading/>
+                      ) : (
+                        <UserRoundMinusIcon className='size-4'/>
+                      )}
+                      {loading ? 'Processing' : 'UnFollow'}
+                    </Button> :
+                    <Button
+                      onClick={handleFollowAction}
+                      className='capitalize flex items-center gap-2 min-w-10 tracking-wide'
+                    >
+                      {loading ? (
+                        <Loading/>
+                      ) : (
+                        <UserRoundPlusIcon className='size-4'/>
+                      )}
+                      {loading ? 'Processing' : 'Follow'}
+                    </Button>}
+                </>
               )}
             </div>
           </div>
