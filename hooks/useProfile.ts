@@ -1,23 +1,32 @@
-import { changeProfileImage, changeProfileInfo } from '@/actions/profile'
-import { useMutation } from '@tanstack/react-query'
+import {changeProfileImage, changeProfileInfo, getUserProfile} from '@/actions/profile'
+import {useMutation, useQuery} from '@tanstack/react-query'
 
 const useProfileInfoMutation = () => {
-	return useMutation({
-		mutationKey: ['updateProfile', 'info'],
-		mutationFn: changeProfileInfo,
-	})
+  return useMutation({
+    mutationKey: ['updateProfile', 'info'],
+    mutationFn: changeProfileInfo,
+  })
 }
 
 const useProfileImageMutation = () => {
-	return useMutation({
-		mutationKey: ['updateProfile', 'image'],
-		mutationFn: changeProfileImage,
-	})
+  return useMutation({
+    mutationKey: ['updateProfile', 'image'],
+    mutationFn: changeProfileImage,
+  })
+}
+
+
+const useGetUserProfile = (username: string) => {
+  return useQuery({
+    queryKey: ['getProfile', username],
+    queryFn: () => getUserProfile(username)
+  })
 }
 
 export const useProfile = () => {
-	return {
-		useProfileInfoMutation,
-		useProfileImageMutation,
-	}
+  return {
+    useProfileInfoMutation,
+    useProfileImageMutation,
+    useGetUserProfile,
+  }
 }

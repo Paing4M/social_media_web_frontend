@@ -23,3 +23,9 @@ export const changeProfileImage = async (data: ChangeProfileImage) => {
 	})
 	return res.data
 }
+
+
+export const getUserProfile =  async (username:string) =>{
+	const res = await Axios.get('/user/' + username)
+	return res.data
+}
