@@ -14,6 +14,8 @@ import PostTextEditor from "@/components/post/PostTextEditor";
 import {useUser} from "@/hooks/useUser";
 import {useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import {userFollow} from "@/actions/user";
+import UserFollowList from "@/components/following/UserFollowList";
 
 
 interface ProfileTabsProps {
@@ -45,11 +47,12 @@ const ProfileTabs = ({
                      }: ProfileTabsProps) => {
 
   const {username} = useParams()
-  const {useFollowMutation} = useUser()
+  const {useFollowMutation , useGetUserFollow} = useUser()
   const {mutateAsync} = useFollowMutation()
+  const {data:userFollowData , isLoading } = useGetUserFollow(username.toString()!)
+
 
   const quertClient = useQueryClient()
-
   const handleFollowAction = async () => {
     try {
       await mutateAsync(user.id, {
@@ -66,8 +69,9 @@ const ProfileTabs = ({
     } catch (e: any) {
       console.log(e)
     }
-
   }
+
+  if(isLoading) return  <Loading/>
 
   return (
     <>
@@ -230,8 +234,14 @@ const ProfileTabs = ({
           <PostList username={username?.toString()}/>
         </TabsContent>
 
-        <TabsContent value='followers'>followers</TabsContent>
-        <TabsContent value='followings'>followings</TabsContent>
+        <TabsContent value='followers'>
+          <UserFollowList data={userFollowData?.followers!}/>
+
+        </TabsContent>
+        <TabsContent value='followings'>
+          <UserFollowList  data={userFollowData?.followings!}/>
+
+        </TabsContent>
         <TabsContent value='photos'>photos</TabsContent>
       </Tabs>
     </>

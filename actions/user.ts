@@ -14,3 +14,8 @@ export const followAction = async (user_id: number) => {
   const res = await Axios.post('/user/follow-action', {user_id} )
   return res.data
 }
+
+export const userFollow  = async  (username:string) =>{
+  const res = await Axios.get(`/user/${username}/following`)
+  return res.data
+}

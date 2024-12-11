@@ -48,7 +48,6 @@ const ProfileContainer = ({username}: ProfileContainerProps) => {
   const [errors, setErrors] = useState<Error | null>(null)
   const {data:user , isError , isSuccess , isLoading} = useGetUserProfile(username)
 
-  console.log({user})
 
   if(isLoading) return <Loading/>
 

@@ -15,6 +15,11 @@ interface BaseUserInterface {
 	isFollowedByCurrentUser:boolean | null
 }
 
+interface UserFollowInterface {
+	followers:BaseUserInterface[],
+	followings:BaseUserInterface[],
+}
+
 interface GpUserInterface extends BaseUserInterface {
 	userRoleInGroup?:string
 }

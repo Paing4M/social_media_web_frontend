@@ -23,6 +23,7 @@ const useGetUserProfile = (username: string) => {
   })
 }
 
+
 export const useProfile = () => {
   return {
     useProfileInfoMutation,

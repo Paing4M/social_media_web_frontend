@@ -1,5 +1,5 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
-import {followAction, getUserPosts} from "@/actions/user";
+import {followAction, getUserPosts, userFollow} from "@/actions/user";
 
 const useGetUserPosts = (username: string) => {
   return useInfiniteQuery({
@@ -17,10 +17,17 @@ const useFollowMutation = () => {
   })
 }
 
+const useGetUserFollow = (username:string) =>{
+  return useQuery({
+    queryKey: ['get' , 'follow' , username],
+    queryFn:():Promise<UserFollowInterface>=>userFollow(username)
+  })
+}
 
 export const useUser = () => {
   return {
     useGetUserPosts,
-    useFollowMutation
+    useFollowMutation,
+    useGetUserFollow
   }
 }
