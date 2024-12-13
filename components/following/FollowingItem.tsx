@@ -1,12 +1,15 @@
 import Link from 'next/link'
 import UserAvatar from '../avatar/UserAvatar'
 
-const FollowingItem = () => {
-	return (
-		<Link href={'/'} className='flex items-center gap-x-3'>
-			<UserAvatar name='test' />
+type FollowingItemProps = {
+	user:BaseUserInterface
+}
 
-			<h4 className='text-[16px] tracking-wide'>Title</h4>
+const FollowingItem = ({user}:FollowingItemProps) => {
+	return (
+		<Link href={'/profile/' + user.username} className='flex items-center gap-x-3'>
+			<UserAvatar name={user.username} src={user.avatar_url!} />
+			<h4 className='text-[16px] tracking-wide'>{user.username}</h4>
 		</Link>
 	)
 }

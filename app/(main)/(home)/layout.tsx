@@ -4,13 +4,19 @@ import Navbar from '@/components/nav/Navbar'
 import { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
 import React from "react";
+import {auth} from "@/app/api/auth/[...nextauth]/auth";
 
 export const metadata: Metadata = {
 	title: 'Home',
 	description: 'Welcome to Social-App.',
 }
 
-const MainLayout = ({ children }: { children: React.ReactNode }) => {
+const MainLayout = async ({ children }: { children: React.ReactNode }) => {
+	
+	const session = await auth()
+
+	if (!session) return
+
 	return (
 		<>
 			<Navbar />
@@ -24,7 +30,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 				</div>
 
 				<div className='hidden lg:block col-span-3 '>
-					<Following />
+					<Following username={session?.user.username} />
 				</div>
 			</div>
 

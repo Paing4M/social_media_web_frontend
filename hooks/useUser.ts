@@ -1,5 +1,5 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
-import {followAction, getUserPosts, userFollow} from "@/actions/user";
+import {followAction, getFollowingUser, getUserPosts, userFollow} from "@/actions/user";
 
 const useGetUserPosts = (username: string) => {
   return useInfiniteQuery({
@@ -24,10 +24,20 @@ const useGetUserFollow = (username:string) =>{
   })
 }
 
+const useGetFollowingUser = (username:string) =>{
+  return useInfiniteQuery({
+    queryKey:['get' , 'followingUser' , username] ,
+    queryFn:({pageParam})=>getFollowingUser(username , pageParam),
+    initialPageParam:null,
+    getNextPageParam: (last) => last.meta?.next_cursor,
+  })
+}
+
 export const useUser = () => {
   return {
     useGetUserPosts,
     useFollowMutation,
-    useGetUserFollow
+    useGetUserFollow,
+    useGetFollowingUser
   }
 }

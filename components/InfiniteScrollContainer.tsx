@@ -3,7 +3,7 @@ import React from "react";
 
 interface InfiniteScrollContainer extends React.PropsWithChildren {
 	isOnBottom: () => void
-	className: string
+	className?: string
 }
 
 const InfiniteScrollContainer = ({
