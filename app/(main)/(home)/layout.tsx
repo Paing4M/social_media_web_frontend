@@ -3,6 +3,7 @@ import Group from '@/components/group/Group'
 import Navbar from '@/components/nav/Navbar'
 import { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
+import React from "react";
 
 export const metadata: Metadata = {
 	title: 'Home',
