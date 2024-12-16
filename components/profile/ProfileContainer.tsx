@@ -2,15 +2,12 @@
 
 import Image from 'next/image'
 import {useSession} from 'next-auth/react'
-import {CheckIcon, ImageIcon, XIcon} from 'lucide-react'
+import { ImageIcon, XIcon} from 'lucide-react'
 import React, {useState} from 'react'
 import ProfileTabs from './ProfileTabs'
 import {useProfile} from '@/hooks/useProfile'
 import InputError from '@/app/(auth)/InputError'
-import ProfileUserInfo from './ProfileUserInfo'
 import toast from 'react-hot-toast'
-import {useQuery} from "@tanstack/react-query";
-import {getUserProfile} from "@/actions/profile";
 import Loading from "@/components/Loading";
 
 interface ProfileContainerProps {

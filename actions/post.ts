@@ -2,6 +2,7 @@ import Axios from '@/lib/axios'
 
 interface AddPostInterface {
 	body: string
+	group_id?: number | null
 }
 
 interface UpdatePostInterface {

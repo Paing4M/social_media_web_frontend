@@ -7,15 +7,18 @@ import {Session} from 'next-auth'
 import ProfileUserInfo from './ProfileUserInfo'
 import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar'
 import Loading from '../Loading'
-import React from "react";
+import React, {useState} from "react";
 import PostList from "@/components/post/PostList";
 import {useParams} from "next/navigation";
 import PostTextEditor from "@/components/post/PostTextEditor";
 import {useUser} from "@/hooks/useUser";
 import {useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import {userFollow} from "@/actions/user";
 import UserFollowList from "@/components/following/UserFollowList";
+import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
+import AttachmentPreviewModal from "@/components/modal/AttachmentPreviewModal";
+import PhotoAttachments from "@/components/profile/PhotoAttachments";
+import PhotoPreviewModal from "@/components/modal/PhotoPreviewModal";
 
 
 interface ProfileTabsProps {
@@ -46,19 +49,31 @@ const ProfileTabs = ({
                        clearAvatar,
                      }: ProfileTabsProps) => {
 
+  const [preview, setPreview] = useState<PostAttachmentInterface | null>(null)
+  const [openPreview, setOpenPreview] = useState(false)
+
   const {username} = useParams()
-  const {useFollowMutation , useGetUserFollow} = useUser()
+  const {useFollowMutation, useGetUserFollow, useGetPhotos} = useUser()
+  const {
+    data: photoData,
+    isLoading: photoLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage
+  } = useGetPhotos(username.toString())
   const {mutateAsync} = useFollowMutation()
-  const {data:userFollowData , isLoading } = useGetUserFollow(username.toString()!)
+  const {data: userFollowData, isLoading} = useGetUserFollow(username.toString()!)
+
+  const photos: PostAttachmentInterface[] = photoData?.pages.flatMap((page) => page.data) || [] as PostAttachmentInterface[]
 
 
-  const quertClient = useQueryClient()
+  const queryClient = useQueryClient()
   const handleFollowAction = async () => {
     try {
       await mutateAsync(user.id, {
-        onSuccess: (res:any) => {
+        onSuccess: (res: any) => {
           // console.log(res)
-          quertClient.setQueryData(['getProfile', user.username], (oldData: UserInterface) => {
+          queryClient.setQueryData(['getProfile', user.username], (oldData: UserInterface) => {
             if (!oldData) return
             const status = res.status == 201 ? true : res.status == 200 ? false : null
             return {...oldData, isFollowedByCurrentUser: status}
@@ -71,7 +86,18 @@ const ProfileTabs = ({
     }
   }
 
-  if(isLoading) return  <Loading/>
+  if (isLoading) return <Loading/>
+
+  function handlePreview(idx: number) {
+    setPreview(photos[idx])
+    setOpenPreview(true)
+  }
+
+  function closePreview() {
+    setPreview(null)
+    setOpenPreview(false)
+  }
+
 
   return (
     <>
@@ -227,22 +253,51 @@ const ProfileTabs = ({
           </TabsContent>
         )}
 
+        {/* posts */}
         <TabsContent value='posts'>
-          {data?.user.id == user.id && (
-            <PostTextEditor user={data?.user} username={username.toString()}/>
-          )}
-          <PostList username={username?.toString()}/>
+          <div className='space-y-5'>
+            {data?.user.id == user.id && (
+              <PostTextEditor user={data?.user} username={username.toString()}/>
+            )}
+            <PostList username={username?.toString()}/>
+          </div>
         </TabsContent>
 
+        {/* followers */}
         <TabsContent value='followers'>
           <UserFollowList data={userFollowData?.followers!}/>
-
         </TabsContent>
+
+        {/* followings */}
         <TabsContent value='followings'>
-          <UserFollowList  data={userFollowData?.followings!}/>
-
+          <UserFollowList data={userFollowData?.followings!}/>
         </TabsContent>
-        <TabsContent value='photos'>photos</TabsContent>
+
+        {/* photos */}
+        <TabsContent value='photos'>
+          {photoLoading && <Loading/>}
+          {!photoLoading && photos.length === 0 && (
+            <p className='text-sm text-center'>No photos.</p>
+          )}
+          <InfiniteScrollContainer
+            isOnBottom={() => {
+              hasNextPage && !isFetchingNextPage && fetchNextPage()
+            }}
+          >
+            <PhotoAttachments handlePreview={handlePreview} attachments={photos}/>
+            {isFetchingNextPage && <Loading/>}
+          </InfiniteScrollContainer>
+
+          {/* preview modal */}
+          {preview && (
+            <PhotoPreviewModal
+              photo={preview}
+              open={openPreview}
+              closeModal={closePreview}
+              key={preview.id}
+            />
+          )}
+        </TabsContent>
       </Tabs>
     </>
   )

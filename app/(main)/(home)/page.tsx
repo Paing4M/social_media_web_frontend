@@ -14,7 +14,9 @@ export default async function Home() {
   return (
     <>
       <PostTextEditor user={session?.user!}/>
-      <PostList/>
+      <div className='mt-5'>
+        <PostList/>
+      </div>
     </>
   )
 }

@@ -155,7 +155,7 @@ const PostList = ({groupId = null, currentUserRole, username = null}: PostListPr
         isOnBottom={() => {
           hasNextPage && !isFetchingNextPage && fetchNextPage()
         }}
-        className='mt-5 pb-5 flex flex-col gap-5'
+        className='pb-5 flex flex-col gap-5'
       >
         {posts?.map((post) => (
           <PostItem

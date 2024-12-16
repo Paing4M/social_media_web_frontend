@@ -14,6 +14,7 @@ import {readFile} from '@/lib/utils'
 import {v4 as uuidv4} from 'uuid'
 import PostPreviewAttachments from './PostPreviewAttachments'
 import {useCustomEditor} from '../UseCustomEditor'
+import {Sparkles} from "lucide-react";
 
 
 interface PostTextEditorProps {
@@ -74,6 +75,7 @@ const PostTextEditor = ({ user , groupId , username }: PostTextEditorProps) => {
 		try {
 			let data = {
 				body: input,
+				group_id: groupId || null,
 				attachments: attachments.map((att) => att.file),
 			}
 
@@ -182,10 +184,19 @@ const PostTextEditor = ({ user , groupId , username }: PostTextEditorProps) => {
 				<UserAvatar src={user?.avatar_url!} name={user?.username!} />
 
 				<div className='w-full'>
-					<EditorContent
-						editor={editor}
-						className='w-full max-h-[10rem]  overflow-y-auto bg-muted px-4 py-2 rounded-lg '
-					/>
+					<div className='flex items-center justify-between gap-1'>
+						<EditorContent
+							editor={editor}
+							className='w-full max-h-[10rem]  overflow-y-auto bg-muted px-4 py-2 rounded-lg '
+						/>
+						<Button className='flex gap-2 text-sm' size='sm' variant='outline'>
+							<Sparkles className='w-5'/>
+							<span className='hidden sm:inline-block text-sm'>
+								Generate
+							</span>
+						</Button>
+					</div>
+
 
 					{extWarning && (
 						<div className='bg-amber-100 text-sm border-l-4 my-2 py-2 border-amber-500 rounded-md text-gray-600 text-wrap'>

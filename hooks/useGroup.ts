@@ -1,7 +1,7 @@
 import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
 import {
   changeGroupProfile,
-  createGroup, getGpPosts, getGroup,
+  createGroup, getGpPosts, getGroup, getGroupPhotos,
   getGroups, gpChangeRole, gpRemoveUser,
   groupRequestAction,
   inviteToGroup,
@@ -88,6 +88,15 @@ const useRemoveGpUser = () =>{
   })
 }
 
+const useGetGpPhotos = (slug: string) => {
+  return useInfiniteQuery({
+    queryKey:['get' , 'getGpPhotos' , slug],
+    queryFn:({pageParam})=>getGroupPhotos(slug , pageParam),
+    initialPageParam:null,
+    getNextPageParam: (lastPage) => lastPage.meta?.next_cursor
+  })
+}
+
 export const useGroup = () => {
   return {
     useCreateGroup,
@@ -99,6 +108,7 @@ export const useGroup = () => {
     useGetGroupWithSlug,
     useGetGpPosts,
     useGpChangeRole,
-    useRemoveGpUser
+    useRemoveGpUser,
+    useGetGpPhotos
   }
 }

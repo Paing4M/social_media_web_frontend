@@ -13,6 +13,10 @@ import {useGroup} from "@/hooks/useGroup";
 import toast from "react-hot-toast";
 import GroupUserList from "@/components/group/GroupUserList";
 import GroupPosts from "@/components/group/GroupPosts";
+import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
+import PhotoAttachments from "@/components/profile/PhotoAttachments";
+import PhotoPreviewModal from "@/components/modal/PhotoPreviewModal";
+import GroupPhotoTabContent from "@/components/group/GroupPhotoTabContent";
 
 
 interface ProfileTabsProps {
@@ -47,6 +51,7 @@ const ProfileTabs = ({
                        loading,
                        clearThumbnail,
                      }: ProfileTabsProps) => {
+
   const [group , setGroup] = useState<GroupInterface>(data.group!)
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
@@ -58,8 +63,12 @@ const ProfileTabs = ({
   const searchParams = useSearchParams()
   const loginUser = useSession()
 
-  const {useJoinGroup} = useGroup()
+  const {useJoinGroup } = useGroup()
   const {mutateAsync:joinGroupMutateAsync , isPending}  = useJoinGroup()
+
+
+
+
 
   const closeModal = () => {
     setOpen(false)
@@ -101,7 +110,6 @@ const ProfileTabs = ({
       }
     }
   }
-
 
   return (
     <>
@@ -252,10 +260,13 @@ const ProfileTabs = ({
 
 
         {/* tabs content */}
+
+        {/* posts */}
         <TabsContent value='posts'>
           <GroupPosts isUserInGroup={group.is_current_user_in_group} currentUserRole={group.current_user_role} id={group.id!}/>
-
         </TabsContent>
+
+        {/* users */}
         {group.current_user_role === 'admin' && (
           <TabsContent value='users'>
             <GroupUserList
@@ -264,6 +275,8 @@ const ProfileTabs = ({
           </TabsContent>
         )}
 
+
+        {/* request users */}
         {group.current_user_role === 'admin' && (
           <TabsContent value='requests'>
             <GroupUserList
@@ -272,7 +285,10 @@ const ProfileTabs = ({
           </TabsContent>
         )}
 
-        <TabsContent value='photos'>photos</TabsContent>
+        {/* photos */}
+        <TabsContent value='photos'>
+          <GroupPhotoTabContent slug={group.slug}/>
+        </TabsContent>
       </Tabs>
     </>
   )

@@ -24,3 +24,8 @@ export const getFollowingUser = async (username: string, cursor: string | null =
   const res = await Axios.get(`/user/${username}/get-following-user?cursor=${cursor}`)
   return res.data
 }
+
+export const getPhotos = async (username: string , cursor:string|null = null) => {
+  const res = await Axios.get(`/user/${username}/photos?cursor=${cursor}`)
+  return res.data
+}

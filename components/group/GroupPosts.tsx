@@ -15,7 +15,7 @@ const GroupPosts = ({id, currentUserRole, isUserInGroup}: GroupPostsProps) => {
   const session = useSession()
 
   return (
-    <>
+    <div className='space-y-5 mt-5'>
       {isUserInGroup && (
         <div className="mt-5">
           <PostTextEditor groupId={id} user={session?.data?.user!}/>
@@ -23,7 +23,7 @@ const GroupPosts = ({id, currentUserRole, isUserInGroup}: GroupPostsProps) => {
       )}
 
       <PostList currentUserRole={currentUserRole} groupId={id}/>
-    </>
+    </div>
 
   )
 }

@@ -92,3 +92,8 @@ export const gpRemoveUser = async (data: GpRemoveUser) => {
   const res = await Axios.post(`/group/${data.slug}/remove-user-from-group`, {user_id: data.user_id})
   return res.data
 }
+
+export const getGroupPhotos = async (slug: string , cursor:string | null = null) => {
+  const res = await Axios.get(`/group/${slug}/photos?cursor=${cursor}`)
+  return res.data
+}
