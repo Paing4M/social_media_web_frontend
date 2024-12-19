@@ -1,6 +1,7 @@
-import { useEditor } from '@tiptap/react'
+import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
+import {Markdown} from 'tiptap-markdown';
 
 type UseCustomEditor = {
 	placeholder?: string | null
@@ -16,6 +17,9 @@ export const useCustomEditor = ({
 			bold: false,
 			italic: false,
 		}),
+		Markdown.configure({
+			html: true,                  // Allow HTML input/output
+		})
 	]
 
 	// Conditionally add the Placeholder extension
@@ -27,11 +31,9 @@ export const useCustomEditor = ({
 		)
 	}
 
-	const editor = useEditor({
+	return useEditor({
 		content,
 		extensions,
 		immediatelyRender: false,
 	})
-
-	return editor
 }

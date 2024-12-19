@@ -46,3 +46,9 @@ export const createPostReaction = async (data: ReactionData) => {
 	})
 	return res.data
 }
+
+
+export const generateAiPost = async (prompt:string) =>{
+	const res = await Axios.post('/post/generate-ai-post' , {prompt})
+	return res.data
+}
