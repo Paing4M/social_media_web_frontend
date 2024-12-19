@@ -89,7 +89,7 @@ const PostTextEditor = ({user, groupId, username}: PostTextEditorProps) => {
               ? ['get', 'getUserPosts', username]
               : groupId
                 ? ['get', 'getGpPosts', groupId]
-                : ['get', 'getPosts'],
+                : ['get', 'getPosts' , null],
             (oldData: QueryDataInterface<Post[]>) => {
               return {
                 ...oldData,

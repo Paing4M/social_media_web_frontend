@@ -12,6 +12,7 @@ import InputError from '@/app/(auth)/InputError'
 import toast from 'react-hot-toast'
 import {EditorContent} from '@tiptap/react'
 import {useCustomEditor} from '../UseCustomEditor'
+import {useSearchParams} from "next/navigation";
 
 
 type PostCommentProps = {
@@ -27,12 +28,12 @@ export type CmtError = {
 
 const PostComment = ({post, groupId, username}: PostCommentProps) => {
   const [error, setError] = useState<CmtError | null>(null)
+
+  const searchParams = useSearchParams()
   const {useCreateComment} = useComment()
   const {mutateAsync, isPending} = useCreateComment()
-
   const queryClient = useQueryClient()
   const session = useSession()
-
   const editor = useCustomEditor({placeholder: 'Write a comment...'})
 
   const input = editor?.getText({blockSeparator: '\n'}) || ''
@@ -51,13 +52,12 @@ const PostComment = ({post, groupId, username}: PostCommentProps) => {
             username ?
               ['get', 'getUserPosts', username] :
               groupId ? ['get', 'getGpPosts', post?.group.id] :
-                ['get', 'getPosts'],
+                ['get', 'getPosts' , searchParams.get('search')],
             (oldData: QueryDataInterface<Post[]> | undefined) => {
               if (!oldData) return
-              console.log({oldData})
+              // console.log({oldData})
 
-
-              const newData = {
+              return {
                 ...oldData,
                 pages: oldData.pages.map((page) => ({
                   ...page,
@@ -75,8 +75,6 @@ const PostComment = ({post, groupId, username}: PostCommentProps) => {
                   ),
                 })),
               }
-
-              return newData
             }
           )
 

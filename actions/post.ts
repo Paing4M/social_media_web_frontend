@@ -21,8 +21,8 @@ export const addPost = async (data: AddPostInterface) => {
 	return res.data
 }
 
-export const getPosts = async (cursor: string | null = null) => {
-	const res = await Axios.get('/post?cursor=' + cursor)
+export const getPosts = async (cursor: string | null = null , search:string | null = null) => {
+	const res = await Axios.get(`/post?cursor=${cursor}${search ? `&${search}` : ''}`)
 	return res.data
 }
 

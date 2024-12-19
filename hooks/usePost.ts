@@ -1,11 +1,11 @@
 import {addPost, deletePost, generateAiPost, getPosts, updatePost} from '@/actions/post'
 import {useInfiniteQuery, useMutation} from '@tanstack/react-query'
 
-const useGetPosts = () => {
+const useGetPosts = (search:string | null) => {
   return useInfiniteQuery({
-    queryKey: ['get', 'getPosts'],
+    queryKey: ['get', 'getPosts' , search],
     queryFn: ({pageParam}: { pageParam: string | null }) =>
-      getPosts(pageParam!),
+      getPosts(pageParam! , search),
     initialPageParam: null,
     getNextPageParam: (last) => last.meta?.next_cursor,
   })

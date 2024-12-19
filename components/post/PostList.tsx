@@ -18,9 +18,10 @@ type PostListProps = {
   username?: string | null
   groupId?: number | null
   currentUserRole?: string | null
+  search?:string | null
 }
 
-const PostList = ({groupId = null, currentUserRole, username = null}: PostListProps) => {
+const PostList = ({groupId = null, currentUserRole, username = null , search}: PostListProps) => {
   const [open, setOpen] = useState(false)
   const [openPreview, setOpenPreview] = useState(false)
   const [editPost, setEditPost] = useState<Post | null>(null)
@@ -34,7 +35,7 @@ const PostList = ({groupId = null, currentUserRole, username = null}: PostListPr
   const {useCreateReaction} = usePostReaction()
   const {useGetUserPosts} = useUser()
   const {data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage} =
-    username ? useGetUserPosts(username) : groupId ? useGetGpPosts(groupId!) : useGetPosts()
+    username ? useGetUserPosts(username) : groupId ? useGetGpPosts(groupId!) : useGetPosts(search!)
 
   const {mutateAsync} = useDeleteMutation()
   const {mutateAsync: reactionMutateAsync} = useCreateReaction()
@@ -65,7 +66,7 @@ const PostList = ({groupId = null, currentUserRole, username = null}: PostListPr
               ? ['get', 'getUserPosts', username]
               : groupId
                 ? ['get', 'getGpPosts', groupId]
-                : ['get', 'getPosts'],
+                : ['get', 'getPosts' , search],
             (oldData: QueryDataInterface<Post[]> | undefined) => {
               if (!oldData) return oldData;
 
@@ -116,10 +117,10 @@ const PostList = ({groupId = null, currentUserRole, username = null}: PostListPr
               ['get', 'getUserPosts', username]
               :
               groupId ?
-                ['get', 'getGpPosts', groupId] : ['get', 'getPosts'],
+                ['get', 'getGpPosts', groupId] : ['get', 'getPosts' , search],
             (oldData: QueryDataInterface<Post[]>) => {
               if (!oldData) return
-              const newData = {
+              return {
                 ...oldData,
                 pages: oldData.pages.map((page) => {
                   return {
@@ -132,8 +133,6 @@ const PostList = ({groupId = null, currentUserRole, username = null}: PostListPr
                   }
                 }),
               }
-
-              return newData
             }
           )
         },

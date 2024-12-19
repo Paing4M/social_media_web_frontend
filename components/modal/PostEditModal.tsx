@@ -2,11 +2,10 @@
 
 import {usePost} from '@/hooks/usePost'
 import {useQueryClient} from '@tanstack/react-query'
-import {EditorContent, useEditor} from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import {EditorContent} from '@tiptap/react'
 import React, {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
-import {FileIcon, PaperclipIcon, UploadIcon, XIcon} from 'lucide-react'
+import {PaperclipIcon, UploadIcon, XIcon} from 'lucide-react'
 import Image from 'next/image'
 import {isImage, readFile} from '@/lib/utils'
 import InputError from '@/app/(auth)/InputError'
@@ -15,6 +14,7 @@ import Modal from './Modal'
 import {Attachment, Error, extensions} from '../post/PostTextEditor'
 import {v4 as uuidv4} from 'uuid'
 import {useCustomEditor} from '../UseCustomEditor'
+import {useSearchParams} from "next/navigation";
 
 interface PostModalProps {
   title?: string
@@ -35,6 +35,7 @@ const PostEditModal = ({post, open, closeModal, title, groupId = null, username 
   const [files, setFiles] = useState<AttachmentType[]>(post?.attachments || [])
   const [deleteIds, setDeleteIds] = useState<Array<number> | []>([])
   const [extWarning, setExtWarning] = useState(false)
+  const searchParams = useSearchParams()
 
   const {useUpdateMutation} = usePost()
   const {mutateAsync, isPending} = useUpdateMutation()
@@ -78,10 +79,10 @@ const PostEditModal = ({post, open, closeModal, title, groupId = null, username 
             username ?
               ['get', 'getUserPosts', username]
               :
-              groupId ? ['get', 'getGpPosts', groupId] : ['get', 'getPosts'],
+              groupId ? ['get', 'getGpPosts', groupId] : ['get', 'getPosts' , searchParams.get('search')],
             (oldData: QueryDataInterface<Post[]>) => {
               if (!oldData) return
-              const newData = {
+              return {
                 ...oldData,
                 pages: oldData.pages.map((page) => {
                   return {
@@ -94,8 +95,6 @@ const PostEditModal = ({post, open, closeModal, title, groupId = null, username 
                   }
                 }),
               }
-
-              return newData
             }
           )
         },
