@@ -1,7 +1,7 @@
 import PostTextEditor from '@/components/post/PostTextEditor'
 import {auth} from '../../api/auth/[...nextauth]/auth'
 import PostList from '@/components/post/PostList'
-import PostSearchContainer from "@/components/post/PostSearchContainer";
+import SearchContainer from "@/components/search/SearchContainer";
 
 
 interface PageProps {
@@ -18,7 +18,7 @@ export default async function Home({searchParams}: PageProps) {
   return (
     <>
       {searchParams?.search ?
-        <PostSearchContainer search={searchParams.search}/>
+        <SearchContainer search={searchParams.search}/>
         :
         <>
           <PostTextEditor user={session?.user!}/>
