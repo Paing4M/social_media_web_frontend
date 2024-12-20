@@ -43,7 +43,7 @@ const SearchContainer = ({search}: SearchContainerProps) => {
 
         <div className='mt-4'>
           <TabsContent value='posts'>
-            <PostList/>
+            <PostList search={search}/>
           </TabsContent>
 
         </div>
