@@ -68,8 +68,6 @@ const ProfileTabs = ({
 
 
 
-
-
   const closeModal = () => {
     setOpen(false)
   }

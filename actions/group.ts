@@ -17,12 +17,15 @@ interface InviteGroupInterface {
   value?: string
 }
 
+
+
 interface JoinGroupInterface {
   token?: string | null
   user_id?: number | null
   group_id?: number | null
   slug?: string | null
 }
+
 
 export const getGroups = async (cursor: string | null = null) => {
   const res = await Axios.get('/group?cursor=' + cursor)
@@ -53,6 +56,7 @@ export const joinGroup = async (data: JoinGroupInterface) => {
   const res = await Axios.post('/group/join/' + data.slug, data)
   return res.data
 }
+
 
 export const groupRequestAction = async (data: {
   action: string,
@@ -95,5 +99,11 @@ export const gpRemoveUser = async (data: GpRemoveUser) => {
 
 export const getGroupPhotos = async (slug: string , cursor:string | null = null) => {
   const res = await Axios.get(`/group/${slug}/photos?cursor=${cursor}`)
+  return res.data
+}
+
+
+export const searchGroup = async (search: string, cursor: string | null = null) => {
+  const res = await Axios.get(`search/group/${search}?cursor=${cursor}`)
   return res.data
 }

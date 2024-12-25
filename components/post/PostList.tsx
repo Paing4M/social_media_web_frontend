@@ -145,7 +145,7 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
 
   if (isLoading && !isFetchingNextPage) return <Loading className={'mt-2'}/>
 
-  if (posts.length === 0) return <p className='text-sm text-center'> posts not found.</p>
+  if (posts.length === 0) return <p className='text-sm text-center'> No Post Found.</p>
 
 
   return (

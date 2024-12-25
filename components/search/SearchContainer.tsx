@@ -1,9 +1,11 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@radix-ui/react-tabs";
 import PostList from "@/components/post/PostList";
 import React from "react";
+import SearchUserList from "@/components/search/SearchUserList";
+import SearchGroupList from "@/components/search/SearchGroupList";
 
 type SearchContainerProps = {
-  search?: string
+  search: string
 }
 
 const SearchContainer = ({search}: SearchContainerProps) => {
@@ -42,8 +44,20 @@ const SearchContainer = ({search}: SearchContainerProps) => {
 
 
         <div className='mt-4'>
+          {/* posts */}
           <TabsContent value='posts'>
             <PostList search={search}/>
+          </TabsContent>
+
+
+          {/* user */}
+          <TabsContent value={'users'}>
+            <SearchUserList search={search!}/>
+          </TabsContent>
+
+          {/* group */}
+          <TabsContent value={'groups'}>
+            <SearchGroupList search={search!}/>
           </TabsContent>
 
         </div>

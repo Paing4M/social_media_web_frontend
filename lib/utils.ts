@@ -1,7 +1,6 @@
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import {type ClassValue, clsx} from 'clsx'
+import {twMerge} from 'tailwind-merge'
 import moment from 'moment'
-import EventEmitter from 'events'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -38,7 +37,9 @@ export async function readFile(file: File) {
 	})
 }
 
-// export function eventEmitter() {
-// 	const emitter = new EventEmitter()
-// 	return emitter
-// }
+export function formatPostBodyHashtag (body:string){
+	return body.replace(/(?:(\s+) | <p>) ((#\w+) (?![^<]*<\/a>))/g, (match, group1, group2) => {
+		const encodeGroup = encodeURIComponent(group2)
+		return `${group1 || ''}<a href="/search/${encodeGroup}" class="hashtag">${group2}</a>`
+	})
+}

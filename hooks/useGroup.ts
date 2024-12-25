@@ -5,8 +5,9 @@ import {
   getGroups, gpChangeRole, gpRemoveUser,
   groupRequestAction,
   inviteToGroup,
-  joinGroup
+  joinGroup, leaveGroup, searchGroup
 } from "@/actions/group";
+import {searchUser} from "@/actions/user";
 
 
 const useGetGroups = () => {
@@ -48,6 +49,7 @@ const useJoinGroup = () => {
   })
 }
 
+
 const useGpAction = () => {
   return useMutation({
     mutationKey: ['post', 'gpAction'],
@@ -73,29 +75,39 @@ const useGetGpPosts = (id: number) => {
   })
 }
 
-const useGpChangeRole = () =>{
+const useGpChangeRole = () => {
   return useMutation({
-    mutationKey:['post' , 'changeGpRole'],
+    mutationKey: ['post', 'changeGpRole'],
     mutationFn: gpChangeRole
   })
 }
 
 
-const useRemoveGpUser = () =>{
+const useRemoveGpUser = () => {
   return useMutation({
-    mutationKey:['post' , 'removeGpUser'],
-    mutationFn:gpRemoveUser
+    mutationKey: ['post', 'removeGpUser'],
+    mutationFn: gpRemoveUser
   })
 }
 
 const useGetGpPhotos = (slug: string) => {
   return useInfiniteQuery({
-    queryKey:['get' , 'getGpPhotos' , slug],
-    queryFn:({pageParam})=>getGroupPhotos(slug , pageParam),
-    initialPageParam:null,
+    queryKey: ['get', 'getGpPhotos', slug],
+    queryFn: ({pageParam}) => getGroupPhotos(slug, pageParam),
+    initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.meta?.next_cursor
   })
 }
+
+const useSearchGroup = (search: string) => {
+  return useInfiniteQuery({
+    queryKey: ['get', 'searchGroup', search],
+    queryFn: ({pageParam}) => searchGroup(search, pageParam),
+    initialPageParam: null,
+    getNextPageParam: (last) => last.meta?.next_cursor,
+  })
+}
+
 
 export const useGroup = () => {
   return {
@@ -109,6 +121,8 @@ export const useGroup = () => {
     useGetGpPosts,
     useGpChangeRole,
     useRemoveGpUser,
-    useGetGpPhotos
+    useGetGpPhotos,
+    useSearchGroup,
+
   }
 }
