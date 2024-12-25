@@ -67,3 +67,8 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+
+.hashtag {
+	color: #6366F1;
+}

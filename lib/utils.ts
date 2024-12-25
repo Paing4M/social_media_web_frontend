@@ -38,8 +38,13 @@ export async function readFile(file: File) {
 }
 
 export function formatPostBodyHashtag (body:string){
-	return body.replace(/(?:(\s+) | <p>) ((#\w+) (?![^<]*<\/a>))/g, (match, group1, group2) => {
-		const encodeGroup = encodeURIComponent(group2)
-		return `${group1 || ''}<a href="/search/${encodeGroup}" class="hashtag">${group2}</a>`
-	})
+
+
+	return body.replace(
+		/(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
+		(match, group1, group2) => {
+			const encodedGroup = encodeURIComponent(group2);
+			return `${group1 || ''}<a href="/search/${encodedGroup}" class="hashtag">${group2}</a>`;
+		}
+	);
 }

@@ -1,22 +1,22 @@
 'use client'
 
 import {SearchIcon} from 'lucide-react'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useParams, useRouter} from 'next/navigation'
 import React, {useEffect, useState} from 'react'
 
 const SearchField = () => {
-  const searchParam = useSearchParams()
+  const params = useParams()
   const [searchInput, setSearchInput] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    setSearchInput(searchParam.get('search'))
-  }, [searchParam])
+    setSearchInput(decodeURIComponent(params?.search?.toString() || ''))
+  }, [params])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchInput?.trim()) {
-      router.push('/?search=' + encodeURIComponent(searchInput!))
+      router.push('/search/' + encodeURIComponent(searchInput!))
     } else {
       router.push('/')
     }
