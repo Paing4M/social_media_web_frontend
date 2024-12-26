@@ -18,6 +18,18 @@ export function isImage(att: PostAttachmentInterface | File) {
 	return res?.[0] === 'image'
 }
 
+export function isVideo(att: PostAttachmentInterface | File) {
+	let mime
+	if ('mime' in att) {
+		mime = att.mime
+	} else if ('type' in att) {
+		mime = att.type
+	}
+
+	const res = mime?.toLowerCase().split('/')
+	return res?.[0] === 'video'
+}
+
 export function formatDate(date: string): string {
 	return moment(date).fromNow()
 }
@@ -38,8 +50,6 @@ export async function readFile(file: File) {
 }
 
 export function formatPostBodyHashtag (body:string){
-
-
 	return body.replace(
 		/(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
 		(match, group1, group2) => {

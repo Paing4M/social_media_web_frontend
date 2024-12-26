@@ -1,6 +1,6 @@
 'use client'
 
-import { isImage } from '@/lib/utils'
+import {isImage, isVideo} from '@/lib/utils'
 import Modal from './Modal'
 import Image from 'next/image'
 import { ChevronLeftIcon, ChevronRightIcon, Paperclip } from 'lucide-react'
@@ -52,7 +52,11 @@ const AttachmentPreviewModal = ({
 							fill
 						/>
 					</div>
-				) : (
+				) : isVideo(attachments[idx]) ? (
+					<div>
+						<video src={attachments[idx]?.url} autoPlay controls></video>
+					</div>
+					): (
 					<div className='bg-blue-200 max-w-[300px] w-full p-4 rounded-lg text-black h-[300px] flex flex-col items-center justify-center gap-4'>
 						<Paperclip className='size-10' />
 						<small className='w-full text-center text-wrap'>
@@ -61,18 +65,22 @@ const AttachmentPreviewModal = ({
 					</div>
 				)}
 
-				<button
-					onClick={prev}
-					className='absolute top-[50%] left-0 translate-y-[-50%] hover:text-white'
-				>
-					<ChevronLeftIcon className='size-14 sm:size-20 ' />
-				</button>
-				<button
-					onClick={next}
-					className='absolute top-[50%] right-0 translate-y-[-50%] hover:text-white'
-				>
-					<ChevronRightIcon className='size-14 sm:size-20' />
-				</button>
+				{attachments.length > 1 && (
+					<>
+						<button
+							onClick={prev}
+							className='absolute top-[50%] left-0 translate-y-[-50%] hover:text-white z-20'
+						>
+							<ChevronLeftIcon className='size-14 sm:size-20 '/>
+						</button>
+						<button
+							onClick={next}
+							className='absolute top-[50%] right-0 translate-y-[-50%] hover:text-white z-20'
+						>
+							<ChevronRightIcon className='size-14 sm:size-20'/>
+						</button>
+					</>
+				)}
 			</div>
 		</Modal>
 	)

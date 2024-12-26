@@ -1,5 +1,5 @@
-import { isImage } from '@/lib/utils'
-import { DownloadIcon, FileIcon } from 'lucide-react'
+import {isImage, isVideo} from '@/lib/utils'
+import {DownloadIcon, FileIcon, PlayIcon} from 'lucide-react'
 import Image from 'next/image'
 
 interface PostAttachmentsProps {
@@ -37,7 +37,15 @@ const PostAttachments = ({
 								alt='post-att'
 							/>
 						</div>
-					) : (
+					) :
+						isVideo(att) ?(
+							<div className='relative'>
+								<video src={att.url}></video>
+								<div className='w-full h-full absolute left-0 top-0 bg-black/50'/>
+								<PlayIcon className='w-14 h-14 absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] text-gray-400 z-10' />
+							</div>
+							) :
+						(
 						<>
 							{/* cannot preview file */}
 							<div className='relative rounded-md flex items-center justify-center flex-col w-full h-full p-4 bg-[#F8EDFF] gap-2'>
@@ -47,7 +55,8 @@ const PostAttachments = ({
 								</p>
 							</div>
 						</>
-					)}
+					)
+					}
 					<a
 						onClick={(e) => e.stopPropagation()}
 						href={
