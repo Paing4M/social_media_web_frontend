@@ -5,7 +5,7 @@ import {
   ChevronRight,
   EllipsisVerticalIcon,
   MessageSquareIcon,
-  PencilIcon,
+  PencilIcon, PinIcon,
   ThumbsUpIcon,
   TrashIcon,
 } from 'lucide-react'
@@ -38,10 +38,12 @@ interface PostItemProps {
   currentUserRole?: string | null
   groupId?: number | null
   username?: string | null
+  handlePin: (postId: number) => void
 }
 
 const PostItem = ({
                     post,
+                    handlePin,
                     handleEdit,
                     handleDelete,
                     handlePreview,
@@ -86,11 +88,30 @@ const PostItem = ({
         {(role == 'admin' || post?.user.id == session?.data?.user.id) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className='border-none outline-none'>
-                <EllipsisVerticalIcon className='size-5'/>
-              </button>
+              <div className='flex items-center gap-2'>
+                {username && groupId && post.pin_created_at &&
+                  <PinIcon className={'w-5'}/>
+                }
+                <button className='border-none outline-none'>
+                  <EllipsisVerticalIcon className='size-5'/>
+                </button>
+              </div>
+
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+
+              {(username || groupId) && (
+                <DropdownMenuItem asChild>
+                  <button
+                    onClick={() => handlePin(post?.id)}
+                    className='flex items-center border-none outline-none gap-2 w-full cursor-pointer'
+                  >
+                    <PinIcon className='size-4 rotate-[45deg]'/>
+                    {post.pin_created_at ? 'UnPin' : 'Pin'}
+                  </button>
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem asChild>
                 <button
                   onClick={() => handleEdit(post)}

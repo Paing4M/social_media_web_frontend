@@ -52,3 +52,8 @@ export const generateAiPost = async (prompt:string) =>{
 	const res = await Axios.post('/post/generate-ai-post' , {prompt})
 	return res.data
 }
+
+export const pinPost  = async  (postId:number) =>{
+	const res = await Axios.post(`/post/pin-post/${postId}`)
+	return res.data
+}

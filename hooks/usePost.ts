@@ -1,11 +1,11 @@
-import {addPost, deletePost, generateAiPost, getPosts, updatePost} from '@/actions/post'
+import {addPost, deletePost, generateAiPost, getPosts, pinPost, updatePost} from '@/actions/post'
 import {useInfiniteQuery, useMutation} from '@tanstack/react-query'
 
-const useGetPosts = (search:string | null) => {
+const useGetPosts = (search: string | null) => {
   return useInfiniteQuery({
-    queryKey: ['get', 'getPosts' , search],
+    queryKey: ['get', 'getPosts', search],
     queryFn: ({pageParam}: { pageParam: string | null }) =>
-      getPosts(pageParam! , search),
+      getPosts(pageParam!, search),
     initialPageParam: null,
     getNextPageParam: (last) => last.meta?.next_cursor,
   })
@@ -39,12 +39,20 @@ const useAiGenerate = () => {
   })
 }
 
+const usePinPost = () => {
+  return useMutation({
+    mutationKey: ['post', 'pinPost'],
+    mutationFn: pinPost
+  })
+}
+
 export const usePost = () => {
   return {
     useAddMutation,
     useGetPosts,
     useUpdateMutation,
     useDeleteMutation,
-    useAiGenerate
+    useAiGenerate,
+    usePinPost
   }
 }

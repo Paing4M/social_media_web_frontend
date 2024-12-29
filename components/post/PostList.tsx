@@ -18,10 +18,10 @@ type PostListProps = {
   username?: string | null
   groupId?: number | null
   currentUserRole?: string | null
-  search?:string | null
+  search?: string | null
 }
 
-const PostList = ({groupId = null, currentUserRole, username = null , search}: PostListProps) => {
+const PostList = ({groupId = null, currentUserRole, username = null, search}: PostListProps) => {
   const [open, setOpen] = useState(false)
   const [openPreview, setOpenPreview] = useState(false)
   const [editPost, setEditPost] = useState<Post | null>(null)
@@ -31,7 +31,7 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
   const [previewIndex, setPreviewIndex] = useState(0)
 
   const {useGetGpPosts} = useGroup()
-  const {useGetPosts, useDeleteMutation} = usePost()
+  const {useGetPosts, useDeleteMutation, usePinPost} = usePost()
   const {useCreateReaction} = usePostReaction()
   const {useGetUserPosts} = useUser()
   const {data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage} =
@@ -39,8 +39,23 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
 
   const {mutateAsync} = useDeleteMutation()
   const {mutateAsync: reactionMutateAsync} = useCreateReaction()
+  const {mutateAsync: pinPostMutateAsync} = usePinPost()
 
-  const posts = data?.pages.flatMap((page) => page.data) || []
+
+  let posts = data?.pages.flatMap((page) => page.data) || []
+
+  // if (username || groupId) {
+  //   posts = posts.sort((a, b) => {
+  //     if (a.pin_created && b.pin_created) {
+  //       return b.pin_created - a.pin_created;
+  //     } else if (a.pin_created) {
+  //       return -1;
+  //     } else if (b.pin_created) {
+  //       return 1;
+  //     }
+  //     return b.created_at - a.created_at;
+  //   });
+  // }
 
   function handleEdit(post: Post) {
     setOpen(true)
@@ -66,7 +81,7 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
               ? ['get', 'getUserPosts', username]
               : groupId
                 ? ['get', 'getGpPosts', groupId]
-                : ['get', 'getPosts' , search],
+                : ['get', 'getPosts', search],
             (oldData: QueryDataInterface<Post[]> | undefined) => {
               if (!oldData) return oldData;
 
@@ -89,6 +104,57 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
         toast.error(err?.response?.data?.message)
       }
     }
+  }
+
+  async function handlePin(postId: number) {
+    try {
+      await pinPostMutateAsync(postId, {
+        onSuccess: (res) => {
+          console.log(res)
+
+          if (username || groupId) {
+            queryClient.setQueryData(
+              username
+                ? ['get', 'getUserPosts', username]
+                : groupId
+                  ? ['get', 'getGpPosts', groupId]
+                  : ['get', 'getPosts', search],
+              (oldData: QueryDataInterface<Post[]> | undefined) => {
+                if (!oldData) return oldData;
+                let pin_created_at = res.post.pin_created_at
+                return {
+                  ...oldData,
+                  pages: oldData.pages.map((page) => ({
+                    ...page,
+                    data: page.data.map((post) =>
+                      post.id == res.post.id ? {...post, pin_created_at: pin_created_at} : post
+                    ).sort((a, b) => {
+                      const aPinDate = a.pin_created_at ? new Date(a.pin_created_at).getTime() : null
+                      const bPinDate = b.pin_created_at ? new Date(b.pin_created_at).getTime() : null
+                      const aCreatedDate = new Date(a.created_at).getTime()
+                      const bCreatedDate = new Date(b.created_at).getTime()
+
+                      if (aPinDate && bPinDate) {
+                        return bPinDate - aPinDate
+                      } else if (aPinDate) {
+                        return -1
+                      } else if (bPinDate) {
+                        return 1
+                      }
+                      return bCreatedDate - aCreatedDate
+                    }),
+                  })),
+                };
+              }
+            )
+          }
+
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
   function handlePreview(attachments: PostAttachmentInterface[], idx: number) {
@@ -117,7 +183,7 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
               ['get', 'getUserPosts', username]
               :
               groupId ?
-                ['get', 'getGpPosts', groupId] : ['get', 'getPosts' , search],
+                ['get', 'getGpPosts', groupId] : ['get', 'getPosts', search],
             (oldData: QueryDataInterface<Post[]>) => {
               if (!oldData) return
               return {
@@ -163,6 +229,7 @@ const PostList = ({groupId = null, currentUserRole, username = null , search}: P
             currentUserRole={currentUserRole}
             key={post?.id}
             post={post!}
+            handlePin={handlePin}
             handleEdit={handleEdit}
             handlePreview={handlePreview}
             handleDelete={handleDelete}

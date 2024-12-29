@@ -40,7 +40,8 @@ type Post = {
 	reacted_by_user: boolean
 	comments: CommentType[]
 	comment_count: number
-	created_at?: string
+	created_at: string
+	pin_created_at?: string | null
 }
 
 type PostGroupType = {
